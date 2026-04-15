@@ -30,8 +30,8 @@ public class FacadeAdministrarCliente implements IAdministrarCliente {
      * @param cliente El DTO con la información del cliente.
      */
     @Override
-    public void guardarDatosPersonales(ClienteDTO cliente) {
-        this.control.guardarDatosPersonales(cliente);
+    public ClienteDTO guardarDatosPersonales(ClienteDTO cliente) {
+        return this.control.guardarDatosPersonales(cliente);
     }
 
     /**

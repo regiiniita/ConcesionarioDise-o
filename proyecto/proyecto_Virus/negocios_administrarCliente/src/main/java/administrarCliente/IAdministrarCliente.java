@@ -17,8 +17,9 @@ public interface IAdministrarCliente {
      * Registra o actualiza los datos personales de un cliente en el sistema.
      * Este método es invocado principalmente desde el formulario FrmDatosPersonales.
      * @param cliente Objeto DTO que contiene la información del cliente a guardar.
+     * @return Un objeto ClienteDTO con los datos guardados
      */
-    public void guardarDatosPersonales(ClienteDTO cliente);
+    public ClienteDTO guardarDatosPersonales(ClienteDTO cliente);
 
     /**
      * Recupera la información de un cliente específico mediante su identificador.

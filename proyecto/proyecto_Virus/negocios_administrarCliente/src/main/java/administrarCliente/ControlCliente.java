@@ -13,6 +13,8 @@ import dto.ClienteDTO;
  * @author regin
  */
 class ControlCliente {
+    
+    private ClienteDTO cliente;
 
     /**
      * Constructor por defecto.
@@ -27,13 +29,10 @@ class ControlCliente {
      * Al ser un Mock, imprime la acción en consola para verificar la invocación.
      * @param cliente DTO con la información a guardar.
      */
-    protected void guardarDatosPersonales(ClienteDTO cliente) {
-        if (cliente != null) {
-            // Simula la validación de los datos de entrada del escenario
-            System.out.println("[MOCK] Guardando datos de: " + cliente.getNombre());
-            System.out.println("[MOCK] RFC registrado: " + cliente.getRfc());
-            System.out.println("[MOCK] Domicilio registrado: " + cliente.getDireccion());
-        }
+    protected ClienteDTO guardarDatosPersonales(ClienteDTO cliente) {
+            System.out.println("Guardando datos de: " + cliente.getNombre());
+            return this.cliente = cliente;
+        
     }
 
     /**
@@ -45,14 +44,6 @@ class ControlCliente {
      */
     protected ClienteDTO consultarCliente(String id) {
         System.out.println("Consultando información para ID: " + id);
-        
-        ClienteDTO juan = new ClienteDTO();
-        juan.setIdCliente(id);
-        // Datos obtenidos de las especificaciones del escenario
-        juan.setNombre("Juan García Pérez");
-        juan.setRfc("GAPR900101XXX");
-        juan.setDireccion("Calle Principal 123, Colonia Centro, CDMX");
-        
-        return juan;
+        return cliente;
     }
 }
