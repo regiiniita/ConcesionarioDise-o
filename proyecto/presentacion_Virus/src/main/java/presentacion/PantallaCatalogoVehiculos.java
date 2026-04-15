@@ -1,12 +1,39 @@
 package presentacion;
 
 import controlador.Coordinador;
-import javax.swing.*;
+import dto.SolicitudDTO;
+import dto.VehiculoDTO;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.OverlayLayout;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class PantallaCatalogoVehiculos extends JFrame {
 
@@ -14,15 +41,28 @@ public class PantallaCatalogoVehiculos extends JFrame {
 
     private static final Color COLOR_FONDO = new Color(239, 242, 247);
     private static final Color COLOR_AZUL = new Color(37, 99, 235);
-    private static final Color COLOR_AZUL_OSCURO = new Color(20, 42, 92);
     private static final Color COLOR_TEXTO = new Color(15, 23, 42);
     private static final Color COLOR_TEXTO_SECUNDARIO = new Color(100, 116, 139);
     private static final Color COLOR_BORDE = new Color(209, 213, 219);
     private static final Color COLOR_CARD = Color.WHITE;
     private static final Color COLOR_TAG = new Color(241, 245, 249);
 
+    private final NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(new Locale("es", "MX"));
+
+    private List<VehiculoDTO> vehiculosDisponibles;
+    private VehiculoDTO vehiculoSeleccionado;
+
+    private JPanel panelGridVehiculos;
+    private JLabel lblVehiculoSeleccionado;
+    private JLabel lblPrecioSeleccionado;
+    private JTextField txtEnganche;
+
+    private JPanel tarjetaSeleccionadaActual;
+
     public PantallaCatalogoVehiculos(Coordinador coordinador) {
         this.coordinador = coordinador;
+        this.vehiculosDisponibles = new ArrayList<>();
+
         setTitle("Catálogo de Vehículos");
         setSize(900, 800);
         setLocationRelativeTo(null);
@@ -46,7 +86,12 @@ public class PantallaCatalogoVehiculos extends JFrame {
         contenedorCentral.add(Box.createVerticalStrut(16));
         contenedorCentral.add(crearBarraInformativa());
         contenedorCentral.add(Box.createVerticalStrut(18));
-        contenedorCentral.add(crearGridVehiculos());
+
+        panelGridVehiculos = new JPanel();
+        panelGridVehiculos.setOpaque(false);
+        panelGridVehiculos.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contenedorCentral.add(panelGridVehiculos);
+
         contenedorCentral.add(Box.createVerticalStrut(16));
         contenedorCentral.add(crearPanelSeleccion());
         contenedorCentral.add(Box.createVerticalStrut(16));
@@ -61,6 +106,8 @@ public class PantallaCatalogoVehiculos extends JFrame {
         scrollPane.getViewport().setBackground(COLOR_FONDO);
 
         fondo.add(scrollPane, BorderLayout.CENTER);
+
+        cargarVehiculos();
     }
 
     private JPanel crearEncabezado() {
@@ -108,183 +155,6 @@ public class PantallaCatalogoVehiculos extends JFrame {
         return panel;
     }
 
-    private JPanel crearGridVehiculos() {
-        JPanel grid = new JPanel(new GridLayout(2, 4, 12, 12));
-        grid.setOpaque(false);
-        grid.setPreferredSize(new Dimension(820, 605));
-        grid.setMaximumSize(new Dimension(820, 605));
-        grid.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        grid.add(crearCardVehiculo("Honda CR-V", "EX-L", "Motor: 1.5L Turbo",
-                new String[]{"AWD", "Apple CarPlay", "Cámara 360°"},
-                "$589.000 MXN", true, new Color(224, 232, 255)));
-
-        grid.add(crearCardVehiculo("Nissan Versa", "Advance", "Motor: 1.6L",
-                new String[]{"Aire acondicionado", "Bluetooth", "Sensores de reversa"},
-                "$289.000 MXN", false, new Color(255, 237, 213)));
-
-        grid.add(crearCardVehiculo("Ford Lobo", "XLT 4x4", "Motor: 3.5L V6 EcoBoost",
-                new String[]{"4x4", "Caja de 8 velocidades", "Control de tracción"},
-                "$899.000 MXN", false, new Color(219, 234, 254)));
-
-        grid.add(crearCardVehiculo("Mazda 3", "i Grand Touring", "Motor: 2.5L Skyactiv",
-                new String[]{"Skyactiv", "Head-up display", "Sound Bose"},
-                "$459.000 MXN", false, new Color(254, 226, 226)));
-
-        grid.add(crearCardVehiculo("Toyota Corolla", "XLE", "Motor: 2.0L",
-                new String[]{"Toyota Safety Sense", "Sunroof", "Asientos de piel"},
-                "$429.000 MXN", false, new Color(229, 231, 235)));
-
-        grid.add(crearCardVehiculo("Chevrolet Silverado", "LT Z71", "Motor: 5.3L V8",
-                new String[]{"Suspensión Z71", "MyLink", "Cámara HD"},
-                "$979.000 MXN", false, new Color(224, 242, 254)));
-
-        grid.add(crearCardVehiculo("Volkswagen Jetta", "R-Line", "Motor: 1.4L TSI",
-                new String[]{"Turbo", "Navegación", "Luces LED"},
-                "$449.000 MXN", false, new Color(236, 253, 245)));
-
-        grid.add(crearCardVehiculo("Hyundai Tucson", "Limited", "Motor: 2.5L",
-                new String[]{"SmartSense", "Techo panorámico", "Carga inalámbrica"},
-                "$569.000 MXN", false, new Color(240, 249, 255)));
-
-        return grid;
-    }
-
-    private JPanel crearCardVehiculo(String nombre, String version, String detalle,
-            String[] tags, String precio, boolean seleccionada, Color colorImagen) {
-
-        JPanel card = new JPanel();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setBackground(COLOR_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(seleccionada ? COLOR_AZUL : COLOR_BORDE, seleccionada ? 2 : 1, true),
-                new EmptyBorder(0, 0, 0, 0)
-        ));
-
-        JPanel contenedorImagen = new JPanel();
-        contenedorImagen.setLayout(new OverlayLayout(contenedorImagen));
-        contenedorImagen.setOpaque(false);
-        contenedorImagen.setPreferredSize(new Dimension(200, 128));
-        contenedorImagen.setMaximumSize(new Dimension(Integer.MAX_VALUE, 128));
-        contenedorImagen.setMinimumSize(new Dimension(200, 128));
-
-        JPanel imagen = new JPanel(new BorderLayout());
-        imagen.setBackground(colorImagen);
-        imagen.setPreferredSize(new Dimension(200, 128));
-        imagen.setMaximumSize(new Dimension(Integer.MAX_VALUE, 128));
-        imagen.setMinimumSize(new Dimension(200, 128));
-
-        JLabel year = new JLabel("2024");
-        year.setOpaque(true);
-        year.setBackground(new Color(15, 23, 42));
-        year.setForeground(Color.WHITE);
-        year.setFont(new Font("Segoe UI", Font.BOLD, 10));
-        year.setBorder(new EmptyBorder(3, 7, 3, 7));
-
-        JPanel topYear = new JPanel(new BorderLayout());
-        topYear.setOpaque(false);
-        topYear.setBorder(new EmptyBorder(10, 8, 0, 8));
-        topYear.add(year, BorderLayout.WEST);
-
-        imagen.add(topYear, BorderLayout.NORTH);
-
-        contenedorImagen.add(imagen);
-
-        if (seleccionada) {
-            JLabel check = new JLabel("✓");
-            check.setOpaque(true);
-            check.setBackground(COLOR_AZUL);
-            check.setForeground(Color.WHITE);
-            check.setHorizontalAlignment(SwingConstants.CENTER);
-            check.setPreferredSize(new Dimension(24, 24));
-            check.setMaximumSize(new Dimension(24, 24));
-            check.setMinimumSize(new Dimension(24, 24));
-            check.setFont(new Font("Segoe UI", Font.BOLD, 13));
-
-            JPanel panelCheck = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));
-            panelCheck.setOpaque(false);
-            panelCheck.add(check);
-            panelCheck.setAlignmentX(0.5f);
-            panelCheck.setAlignmentY(0.5f);
-
-            contenedorImagen.add(panelCheck);
-        }
-
-        JPanel contenido = new JPanel(new GridBagLayout());
-        contenido.setOpaque(false);
-        contenido.setBorder(new EmptyBorder(12, 12, 12, 12));
-
-        GridBagConstraints gbcContenido = new GridBagConstraints();
-        gbcContenido.gridx = 0;
-        gbcContenido.weightx = 1.0;
-        gbcContenido.anchor = GridBagConstraints.WEST;
-        gbcContenido.fill = GridBagConstraints.HORIZONTAL;
-        gbcContenido.insets = new Insets(0, 0, 0, 0);
-
-        JLabel lblNombre = new JLabel(nombre);
-        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        lblNombre.setForeground(COLOR_TEXTO);
-
-        JLabel lblVersion = new JLabel(version);
-        lblVersion.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblVersion.setForeground(COLOR_TEXTO_SECUNDARIO);
-
-        JLabel lblDetalle = new JLabel(detalle);
-        lblDetalle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblDetalle.setForeground(new Color(51, 65, 85));
-
-        JPanel panelTags = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-        panelTags.setOpaque(false);
-        for (String tag : tags) {
-            panelTags.add(crearTag(tag));
-        }
-
-        JSeparator separador = new JSeparator();
-        separador.setForeground(new Color(226, 232, 240));
-
-        JLabel lblPrecio = new JLabel(precio);
-        lblPrecio.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        lblPrecio.setForeground(COLOR_AZUL);
-
-        gbcContenido.gridy = 0;
-        contenido.add(lblNombre, gbcContenido);
-
-        gbcContenido.gridy = 1;
-        gbcContenido.insets = new Insets(2, 0, 0, 0);
-        contenido.add(lblVersion, gbcContenido);
-
-        gbcContenido.gridy = 2;
-        gbcContenido.insets = new Insets(10, 0, 0, 0);
-        contenido.add(lblDetalle, gbcContenido);
-
-        gbcContenido.gridy = 3;
-        gbcContenido.insets = new Insets(10, 0, 0, 0);
-        contenido.add(panelTags, gbcContenido);
-
-        gbcContenido.gridy = 4;
-        gbcContenido.insets = new Insets(10, 0, 0, 0);
-        contenido.add(separador, gbcContenido);
-
-        gbcContenido.gridy = 5;
-        gbcContenido.insets = new Insets(10, 0, 0, 0);
-        contenido.add(lblPrecio, gbcContenido);
-
-        card.add(contenedorImagen);
-        card.add(contenido);
-
-        return card;
-    }
-
-    private Component crearTag(String texto) {
-        JLabel tag = new JLabel(texto);
-        tag.setOpaque(true);
-        tag.setBackground(COLOR_TAG);
-        tag.setForeground(new Color(30, 41, 59));
-        tag.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        tag.setBorder(new EmptyBorder(3, 6, 3, 6));
-        return tag;
-    }
-
     private JPanel crearPanelSeleccion() {
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
@@ -297,12 +167,12 @@ public class PantallaCatalogoVehiculos extends JFrame {
         panel.setMaximumSize(new Dimension(820, 135));
         panel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel titulo = new JLabel("Vehículo Seleccionado: Honda CR-V EX-L");
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        titulo.setForeground(COLOR_TEXTO);
-        titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblVehiculoSeleccionado = new JLabel("Vehículo Seleccionado: Ninguno");
+        lblVehiculoSeleccionado.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        lblVehiculoSeleccionado.setForeground(COLOR_TEXTO);
+        lblVehiculoSeleccionado.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        panel.add(titulo);
+        panel.add(lblVehiculoSeleccionado);
         panel.add(Box.createVerticalStrut(18));
 
         JPanel fila = new JPanel(new GridLayout(1, 2, 18, 0));
@@ -319,13 +189,13 @@ public class PantallaCatalogoVehiculos extends JFrame {
         lblPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblPrecio.setForeground(new Color(51, 65, 85));
 
-        JLabel precio = new JLabel("$589.000 MXN");
-        precio.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        precio.setForeground(COLOR_TEXTO);
+        lblPrecioSeleccionado = new JLabel("$0.00 MXN");
+        lblPrecioSeleccionado.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblPrecioSeleccionado.setForeground(COLOR_TEXTO);
 
         panelPrecio.add(lblPrecio);
         panelPrecio.add(Box.createVerticalStrut(10));
-        panelPrecio.add(precio);
+        panelPrecio.add(lblPrecioSeleccionado);
 
         JPanel panelEnganche = new JPanel();
         panelEnganche.setOpaque(false);
@@ -335,7 +205,7 @@ public class PantallaCatalogoVehiculos extends JFrame {
         lblEnganche.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblEnganche.setForeground(new Color(51, 65, 85));
 
-        JTextField txtEnganche = new JTextField("Mínimo 58.900");
+        txtEnganche = new JTextField();
         txtEnganche.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         txtEnganche.setForeground(COLOR_TEXTO_SECUNDARIO);
         txtEnganche.setBackground(Color.WHITE);
@@ -345,6 +215,7 @@ public class PantallaCatalogoVehiculos extends JFrame {
         ));
         txtEnganche.setPreferredSize(new Dimension(360, 34));
         txtEnganche.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
+        txtEnganche.setText("");
 
         panelEnganche.add(lblEnganche);
         panelEnganche.add(Box.createVerticalStrut(6));
@@ -375,12 +246,9 @@ public class PantallaCatalogoVehiculos extends JFrame {
                 new EmptyBorder(6, 16, 6, 16)
         ));
 
-        btnAtras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                coordinador.mostrarFormularioInformacionFinanciera();
-            }
+        btnAtras.addActionListener((ActionEvent e) -> {
+            setVisible(false);
+            coordinador.mostrarFormularioInformacionFinanciera();
         });
 
         JButton btnContinuar = new JButton("Continuar");
@@ -394,17 +262,278 @@ public class PantallaCatalogoVehiculos extends JFrame {
                 new EmptyBorder(8, 16, 8, 16)
         ));
 
-        btnContinuar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                coordinador.mostrarRevisionSolicitud();
+        btnContinuar.addActionListener((ActionEvent e) -> {
+            if (vehiculoSeleccionado == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione un vehículo antes de continuar.");
+                return;
             }
+
+            if (txtEnganche.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese el monto del enganche.");
+                return;
+            }
+            
+            SolicitudDTO soli = coordinador.obtenerSolicitud();
+            soli.setEnganche(Double.parseDouble(txtEnganche.getText().trim()));
+            coordinador.setSolicitud(soli);
+
+            coordinador.asignarVehiculoSeleccionado(vehiculoSeleccionado);
+
+            setVisible(false);
+            coordinador.mostrarRevisionSolicitud();
         });
 
         panel.add(btnAtras, BorderLayout.WEST);
         panel.add(btnContinuar, BorderLayout.EAST);
 
         return panel;
+    }
+
+    private void cargarVehiculos() {
+        try {
+            List<VehiculoDTO> lista = coordinador.obtenerVehiculosDisponibles();
+
+            if (lista != null) {
+                vehiculosDisponibles = lista;
+            } else {
+                vehiculosDisponibles = new ArrayList<>();
+            }
+
+            reconstruirGridVehiculos();
+
+        } catch (Exception ex) {
+            vehiculosDisponibles = new ArrayList<>();
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No fue posible cargar los vehículos disponibles.\n" + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            reconstruirGridVehiculos();
+        }
+    }
+
+    private void reconstruirGridVehiculos() {
+        panelGridVehiculos.removeAll();
+
+        int total = vehiculosDisponibles.size();
+        int columnas = 4;
+        int filas = (int) Math.ceil(total / (double) columnas);
+        filas = Math.max(filas, 1);
+
+        panelGridVehiculos.setLayout(new GridLayout(filas, columnas, 12, 12));
+        panelGridVehiculos.setPreferredSize(new Dimension(820, filas * 230 + ((filas - 1) * 12)));
+        panelGridVehiculos.setMaximumSize(new Dimension(820, filas * 230 + ((filas - 1) * 12)));
+
+        if (vehiculosDisponibles.isEmpty()) {
+            JPanel vacio = new JPanel(new BorderLayout());
+            vacio.setBackground(Color.WHITE);
+            vacio.setBorder(BorderFactory.createCompoundBorder(
+                    new LineBorder(COLOR_BORDE, 1, true),
+                    new EmptyBorder(20, 20, 20, 20)
+            ));
+
+            JLabel lbl = new JLabel("No hay vehículos disponibles por el momento.");
+            lbl.setHorizontalAlignment(SwingConstants.CENTER);
+            lbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            lbl.setForeground(COLOR_TEXTO_SECUNDARIO);
+
+            vacio.add(lbl, BorderLayout.CENTER);
+            panelGridVehiculos.setLayout(new BorderLayout());
+            panelGridVehiculos.add(vacio, BorderLayout.CENTER);
+        } else {
+            for (VehiculoDTO vehiculo : vehiculosDisponibles) {
+                panelGridVehiculos.add(crearCardVehiculo(vehiculo));
+            }
+
+            int celdasTotales = filas * columnas;
+            int faltantes = celdasTotales - total;
+
+            for (int i = 0; i < faltantes; i++) {
+                JPanel empty = new JPanel();
+                empty.setOpaque(false);
+                panelGridVehiculos.add(empty);
+            }
+
+            if (!vehiculosDisponibles.isEmpty() && vehiculoSeleccionado == null) {
+                seleccionarVehiculo(vehiculosDisponibles.get(0), (JPanel) panelGridVehiculos.getComponent(0));
+            }
+        }
+
+        panelGridVehiculos.revalidate();
+        panelGridVehiculos.repaint();
+    }
+
+    private JPanel crearCardVehiculo(VehiculoDTO vehiculo) {
+        boolean seleccionada = vehiculoSeleccionado != null
+                && vehiculoSeleccionado.getSerie().equals(vehiculo.getSerie());
+
+        JPanel card = new JPanel();
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBackground(COLOR_CARD);
+        aplicarEstiloSeleccion(card, seleccionada);
+
+        JPanel contenedorImagen = new JPanel();
+        contenedorImagen.setLayout(new OverlayLayout(contenedorImagen));
+        contenedorImagen.setOpaque(false);
+        contenedorImagen.setPreferredSize(new Dimension(200, 128));
+        contenedorImagen.setMaximumSize(new Dimension(Integer.MAX_VALUE, 128));
+        contenedorImagen.setMinimumSize(new Dimension(200, 128));
+
+        JPanel imagen = new JPanel(new BorderLayout());
+        imagen.setBackground(obtenerColorTarjeta(vehiculo));
+        imagen.setPreferredSize(new Dimension(200, 128));
+        imagen.setMaximumSize(new Dimension(Integer.MAX_VALUE, 128));
+        imagen.setMinimumSize(new Dimension(200, 128));
+
+        JLabel year = new JLabel(String.valueOf(vehiculo.getAnio()));
+        year.setOpaque(true);
+        year.setBackground(new Color(15, 23, 42));
+        year.setForeground(Color.WHITE);
+        year.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        year.setBorder(new EmptyBorder(3, 7, 3, 7));
+
+        JPanel topYear = new JPanel(new BorderLayout());
+        topYear.setOpaque(false);
+        topYear.setBorder(new EmptyBorder(10, 8, 0, 8));
+        topYear.add(year, BorderLayout.WEST);
+
+        imagen.add(topYear, BorderLayout.NORTH);
+        contenedorImagen.add(imagen);
+
+        if (seleccionada) {
+            JLabel check = new JLabel("✓");
+            check.setOpaque(true);
+            check.setBackground(COLOR_AZUL);
+            check.setForeground(Color.WHITE);
+            check.setHorizontalAlignment(SwingConstants.CENTER);
+            check.setPreferredSize(new Dimension(24, 24));
+            check.setMaximumSize(new Dimension(24, 24));
+            check.setMinimumSize(new Dimension(24, 24));
+            check.setFont(new Font("Segoe UI", Font.BOLD, 13));
+
+            JPanel panelCheck = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));
+            panelCheck.setOpaque(false);
+            panelCheck.add(check);
+            panelCheck.setAlignmentX(0.5f);
+            panelCheck.setAlignmentY(0.5f);
+
+            contenedorImagen.add(panelCheck);
+        }
+
+        JPanel contenido = new JPanel(new GridLayout(0, 1, 0, 4));
+        contenido.setOpaque(false);
+        contenido.setBorder(new EmptyBorder(12, 12, 12, 12));
+
+        JLabel lblNombre = new JLabel(vehiculo.getMarca() + " " + vehiculo.getModelo() + " " + vehiculo.getAnio());
+        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblNombre.setForeground(COLOR_TEXTO);
+
+        JLabel lblSerie = new JLabel("Serie: " + vehiculo.getSerie());
+        lblSerie.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblSerie.setForeground(COLOR_TEXTO_SECUNDARIO);
+
+        JLabel lblEstado = new JLabel("Estado: " + vehiculo.getEstado());
+        lblEstado.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblEstado.setForeground(new Color(51, 65, 85));
+
+        JSeparator separador = new JSeparator();
+        separador.setForeground(new Color(226, 232, 240));
+
+        JLabel lblPrecio = new JLabel(formatearMoneda(vehiculo.getPrecio()));
+        lblPrecio.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblPrecio.setForeground(COLOR_AZUL);
+
+        contenido.add(lblNombre);
+        contenido.add(lblSerie);
+        contenido.add(lblEstado);
+        contenido.add(separador);
+        contenido.add(lblPrecio);
+
+        card.add(contenedorImagen);
+        card.add(contenido);
+
+        agregarEventoSeleccion(card, vehiculo, card);
+
+        return card;
+    }
+
+    private void agregarEventoSeleccion(Component componente, VehiculoDTO vehiculo, JPanel tarjetaRaiz) {
+        componente.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                seleccionarVehiculo(vehiculo, tarjetaRaiz);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                componente.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+        });
+
+        if (componente instanceof Container) {
+            for (Component hijo : ((Container) componente).getComponents()) {
+                agregarEventoSeleccion(hijo, vehiculo, tarjetaRaiz);
+            }
+        }
+    }
+
+    private void seleccionarVehiculo(VehiculoDTO vehiculo, JPanel tarjetaSeleccionada) {
+        vehiculoSeleccionado = vehiculo;
+
+        if (tarjetaSeleccionadaActual != null) {
+            aplicarEstiloSeleccion(tarjetaSeleccionadaActual, false);
+            tarjetaSeleccionadaActual.repaint();
+        }
+
+        tarjetaSeleccionadaActual = tarjetaSeleccionada;
+        aplicarEstiloSeleccion(tarjetaSeleccionadaActual, true);
+        tarjetaSeleccionadaActual.repaint();
+
+        lblVehiculoSeleccionado.setText(
+                "Vehículo Seleccionado: "
+                + vehiculo.getMarca() + " "
+                + vehiculo.getModelo() + " "
+                + vehiculo.getAnio()
+        );
+
+        lblPrecioSeleccionado.setText(formatearMoneda(vehiculo.getPrecio()));
+
+        double minimoEnganche = vehiculo.getPrecio() * 0.10;
+        txtEnganche.setText(String.format(Locale.US, "%.2f", minimoEnganche));
+    }
+
+    private void aplicarEstiloSeleccion(JPanel card, boolean seleccionada) {
+        card.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(seleccionada ? COLOR_AZUL : COLOR_BORDE, seleccionada ? 2 : 1, true),
+                new EmptyBorder(0, 0, 0, 0)
+        ));
+    }
+
+    private Color obtenerColorTarjeta(VehiculoDTO vehiculo) {
+        int hash = Math.abs((vehiculo.getMarca() + vehiculo.getModelo()).hashCode());
+        Color[] colores = new Color[]{
+            new Color(224, 232, 255),
+            new Color(255, 237, 213),
+            new Color(219, 234, 254),
+            new Color(254, 226, 226),
+            new Color(229, 231, 235),
+            new Color(224, 242, 254),
+            new Color(236, 253, 245),
+            new Color(240, 249, 255)
+        };
+        return colores[hash % colores.length];
+    }
+
+    private String formatearMoneda(double precio) {
+        return formatoMoneda.format(precio);
+    }
+
+    public VehiculoDTO getVehiculoSeleccionado() {
+        return vehiculoSeleccionado;
+    }
+
+    public String getMontoEngancheCapturado() {
+        return txtEnganche.getText().trim();
     }
 }

@@ -1,12 +1,9 @@
 presentacion\PantallaConfirmacionSolicitud.class
 presentacion\PantallaRevisionSolicitud$2.class
 presentacion\PantallaRevisionSolicitud.class
-presentacion\PantallaFormularioInformacionFinanciera$1.class
 presentacion\PantallaFormularioDatosPersonales$2.class
-presentacion\PantallaCatalogoVehiculos$2.class
+presentacion\PantallaDashboard$EstadoVisual.class
 presentacion\PantallaDashboard.class
-presentacion\PantallaFormularioInformacionFinanciera$2.class
-presentacion\PantallaDashboard$1.class
 controlador\Coordinador.class
 presentacion\PantallaCatalogoVehiculos.class
 presentacion\PantallaFormularioDatosPersonales$1.class

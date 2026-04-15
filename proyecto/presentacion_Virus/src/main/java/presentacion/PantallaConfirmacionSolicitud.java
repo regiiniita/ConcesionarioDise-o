@@ -126,7 +126,7 @@ public class PantallaConfirmacionSolicitud extends JFrame {
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblId = new JLabel("CR-7B4AS4P");
+        JLabel lblId = new JLabel(coordinador.obtenerSolicitud().getId());
         lblId.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblId.setForeground(Color.WHITE);
         lblId.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -163,7 +163,7 @@ public class PantallaConfirmacionSolicitud extends JFrame {
         textos.setOpaque(false);
         textos.setLayout(new BoxLayout(textos, BoxLayout.Y_AXIS));
 
-        JLabel titulo = new JLabel("Estado: En Revisión");
+        JLabel titulo = new JLabel("Estado: Enviada");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 14));
         titulo.setForeground(COLOR_TEXTO);
 

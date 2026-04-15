@@ -1,16 +1,24 @@
 package presentacion;
 
 import controlador.Coordinador;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
+import dto.SolicitudDTO;
+import dto.ClienteDTO;
+import dto.VehiculoDTO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.text.NumberFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 public class PantallaRevisionSolicitud extends JFrame {
-    
+
     private final Coordinador coordinador;
+    private SolicitudDTO solicitud;
 
     private static final Color COLOR_FONDO = new Color(239, 242, 247);
     private static final Color COLOR_AZUL = new Color(37, 99, 235);
@@ -21,9 +29,12 @@ public class PantallaRevisionSolicitud extends JFrame {
     private static final Color COLOR_VERDE_SUAVE = new Color(240, 253, 244);
     private static final Color COLOR_AZUL_SUAVE = new Color(239, 246, 255);
 
+    private final NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(new Locale("es", "MX"));
+
     public PantallaRevisionSolicitud(Coordinador coordinador) {
         this.coordinador = coordinador;
-        
+        this.solicitud = coordinador.obtenerSolicitud();
+
         setTitle("Revisar Solicitud");
         setSize(800, 800);
         setLocationRelativeTo(null);
@@ -69,14 +80,6 @@ public class PantallaRevisionSolicitud extends JFrame {
         JPanel izquierda = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         izquierda.setOpaque(false);
 
-//        JLabel icono = new JLabel("◉");
-//        icono.setOpaque(true);
-//        icono.setBackground(COLOR_AZUL);
-//        icono.setForeground(Color.WHITE);
-//        icono.setHorizontalAlignment(SwingConstants.CENTER);
-//        icono.setPreferredSize(new Dimension(20, 20));
-//        icono.setFont(new Font("Segoe UI Symbol", Font.BOLD, 10));
-
         JLabel titulo = new JLabel("Revisar Solicitud");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
         titulo.setForeground(COLOR_TEXTO);
@@ -85,7 +88,6 @@ public class PantallaRevisionSolicitud extends JFrame {
         paso.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         paso.setForeground(COLOR_TEXTO_SECUNDARIO);
 
-//        izquierda.add(icono);
         izquierda.add(titulo);
 
         panel.add(izquierda, BorderLayout.WEST);
@@ -98,26 +100,50 @@ public class PantallaRevisionSolicitud extends JFrame {
         JPanel card = crearCardBase();
         card.add(crearTituloSeccion("Información Personal"));
         card.add(Box.createVerticalStrut(18));
+
+        ClienteDTO cliente = solicitud != null ? solicitud.getCliente() : null;
+
+        String nombreCompleto = "No disponible";
+        String rfc = "No disponible";
+        String domicilio = "No disponible";
+        String curp = "No disponible";
+        String estadoCivil = "No disponible";
+        String telefono = "No disponible";
+        String correo = "No disponible";
+        
+        if (cliente != null) {
+            nombreCompleto = valorSeguro(cliente.getNombre());
+            rfc = valorSeguro(cliente.getRfc());
+            domicilio = valorSeguro(cliente.getDireccion());
+            curp = valorSeguro(cliente.getCurp());
+            estadoCivil = valorSeguro(cliente.getEstadoCivil());
+            telefono = valorSeguro(cliente.getTelefono());
+            correo = valorSeguro(cliente.getCorreo());
+        }
+
         card.add(crearPanelDatos(new String[][]{
-                {"Nombre Completo:", "Jesús Valenzuela"},
-                {"Edad:", "23"},
-                {"CURP:", "VAEJ010315HSRLRSA4"},
-                {"RFC:", "VAEJ010315KJ2"},
-                {"Estado Civil:", "Soltero"},
-                {"Teléfono:", "644 123 4567"},
-                {"Correo:", "jesus.valenzuela23@outlook.com"},
-                {"Domicilio:", "Calle Náinari 245, Cd. Obregón, Sonora"}
+            {"Nombre Completo:", nombreCompleto},
+            {"Edad:", "No disponible"},
+            {"CURP:", curp},
+            {"RFC:", rfc},
+            {"Estado Civil:", estadoCivil},
+            {"Teléfono:", telefono},
+            {"Correo:", correo},
+            {"Domicilio:", domicilio}
         }));
+
         card.add(Box.createVerticalStrut(16));
         card.add(crearSeparador());
         card.add(Box.createVerticalStrut(16));
         card.add(crearSubtituloCentrado("Documentos Personales:"));
         card.add(Box.createVerticalStrut(10));
+
         card.add(crearPanelDocumentos(new String[]{
-                "CURP_Jesus_Valenzuela.pdf",
-                "RFC_Jesus_Valenzuela.pdf",
-                "INE_Jesus_Valenzuela.pdf"
+            "CURP: " + obtenerNombreArchivo(solicitud != null ? solicitud.getCliente().getRutaCurp() : null),
+            "RFC: " + obtenerNombreArchivo(solicitud != null ? solicitud.getCliente().getRutaRfc(): null),
+            "INE/Pasaporte: " + obtenerNombreArchivo(solicitud != null ? solicitud.getCliente().getRutaIdentificacion(): null)
         }));
+
         return card;
     }
 
@@ -125,16 +151,28 @@ public class PantallaRevisionSolicitud extends JFrame {
         JPanel card = crearCardBase();
         card.add(crearTituloSeccion("Información Financiera"));
         card.add(Box.createVerticalStrut(18));
+
+        String tipoEmpleo = solicitud != null ? valorSeguro(solicitud.getTipoEmpleo()) : "No disponible";
+        String empresa = solicitud != null ? valorSeguro(solicitud.getNombreEmpresa()) : "No disponible";
+        String puesto = solicitud != null ? valorSeguro(solicitud.getPuesto()) : "No disponible";
+        String antiguedad = solicitud != null ? valorSeguro(solicitud.getAntiguedadLaboral()) : "No disponible";
+        String tipoContrato = solicitud != null ? valorSeguro(solicitud.getTipoContrato()) : "No disponible";
+
+        Double ingresoBruto = solicitud != null ? solicitud.getIngresoMensualBruto() : null;
+        Double ingresoNeto = solicitud != null ? solicitud.getIngresoMensualNeto() : null;
+        Double gastosMensuales = solicitud != null ? solicitud.getGastosMensuales() : null;
+
         card.add(crearPanelDatos(new String[][]{
-                {"Tipo de Empleo:", "Dueño de negocio"},
-                {"Empresa:", "Valenzuela Servicios Digitales"},
-                {"Puesto:", "Director General"},
-                {"Antigüedad:", "3 años"},
-                {"Tipo de Contrato:", "Actividad empresarial"},
-                {"Ingreso Mensual Bruto:", "$48,500 MXN"},
-                {"Ingreso Mensual Neto:", "$41,200 MXN"},
-                {"Gastos Mensuales:", "$12,800 MXN"}
+            {"Tipo de Empleo:", tipoEmpleo},
+            {"Empresa:", empresa},
+            {"Puesto:", puesto},
+            {"Antigüedad:", antiguedad},
+            {"Tipo de Contrato:", tipoContrato},
+            {"Ingreso Mensual Bruto:", formatearMonedaNullable(ingresoBruto)},
+            {"Ingreso Mensual Neto:", formatearMonedaNullable(ingresoNeto)},
+            {"Gastos Mensuales:", formatearMonedaNullable(gastosMensuales)}
         }));
+
         card.add(Box.createVerticalStrut(16));
 
         JPanel ingresoDisponible = new JPanel(new BorderLayout());
@@ -150,7 +188,12 @@ public class PantallaRevisionSolicitud extends JFrame {
         lblIngreso.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblIngreso.setForeground(new Color(22, 101, 52));
 
-        JLabel valorIngreso = new JLabel("$28,400 MXN");
+        double disponible = 0.0;
+        if (ingresoNeto != null && gastosMensuales != null) {
+            disponible = ingresoNeto - gastosMensuales;
+        }
+
+        JLabel valorIngreso = new JLabel(formatoMoneda.format(disponible));
         valorIngreso.setFont(new Font("Segoe UI", Font.BOLD, 18));
         valorIngreso.setForeground(new Color(22, 163, 74));
 
@@ -163,10 +206,12 @@ public class PantallaRevisionSolicitud extends JFrame {
         card.add(Box.createVerticalStrut(16));
         card.add(crearSubtituloCentrado("Documentos Financieros:"));
         card.add(Box.createVerticalStrut(10));
+
         card.add(crearPanelDocumentos(new String[]{
-                "Estado_Cuenta_BBVA_Marzo.pdf",
-                "Constancia_Situacion_Fiscal.pdf"
+            obtenerNombreArchivo(solicitud != null ? solicitud.getRutaComprobanteIngresos() : null),
+            obtenerNombreArchivo(solicitud != null ? solicitud.getRutaComprobanteEmpleo() : null)
         }));
+
         return card;
     }
 
@@ -174,12 +219,35 @@ public class PantallaRevisionSolicitud extends JFrame {
         JPanel card = crearCardBase();
         card.add(crearTituloSeccion("Información del Vehículo"));
         card.add(Box.createVerticalStrut(18));
+
+        VehiculoDTO vehiculo = solicitud != null ? solicitud.getVehiculo() : null;
+
+        String nombreVehiculo = "No disponible";
+        String precioVehiculo = "No disponible";
+        String montoCredito = "No disponible";
+
+        if (vehiculo != null) {
+            nombreVehiculo = vehiculo.getMarca() + " " + vehiculo.getModelo() + " " + vehiculo.getAnio();
+            precioVehiculo = formatoMoneda.format(vehiculo.getPrecio());
+        }
+
+        String enganche = "No disponible";
+        if(solicitud != null){
+            enganche = formatoMoneda.format(solicitud.getEnganche());
+        }
+
+        if (vehiculo != null && solicitud != null) {
+            // TODO: Si luego agregas enganche a SolicitudDTO, recalcula correctamente el monto del crédito.
+            montoCredito = formatoMoneda.format(vehiculo.getPrecio());
+        }
+
         card.add(crearPanelDatos(new String[][]{
-                {"Vehículo:", "Honda CR-V EX-L 2024"},
-                {"Precio del Vehículo:", "$589,000 MXN"},
-                {"Enganche:", "$60,000 MXN"},
-                {"Monto del Crédito:", "$529,000 MXN"}
+            {"Vehículo:", nombreVehiculo},
+            {"Precio del Vehículo:", precioVehiculo},
+            {"Enganche:", enganche},
+            {"Monto del Crédito:", montoCredito}
         }));
+
         return card;
     }
 
@@ -199,11 +267,23 @@ public class PantallaRevisionSolicitud extends JFrame {
         titulo.setForeground(new Color(30, 64, 175));
         titulo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        String fechaEnvioTexto = "No disponible";
+        String estadoTexto = "No disponible";
+
+        if (solicitud != null) {
+            if (solicitud.getFechaEnvio() != null) {
+                fechaEnvioTexto = solicitud.getFechaEnvio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            }
+            if (solicitud.getEstado() != null) {
+                estadoTexto = solicitud.getEstado().toString();
+            }
+        }
+
         JTextArea area = new JTextArea(
-                "• Por favor verifica que toda la información sea correcta.\n" +
-                "• Asegúrate de que todos los documentos requeridos hayan sido cargados.\n" +
-                "• Tu solicitud será revisada en un plazo de 24 a 48 horas.\n" +
-                "• Recibirás notificaciones por correo electrónico y SMS."
+                "• Revise que toda la información mostrada sea correcta.\n" +
+                "• Estado actual de la solicitud: " + estadoTexto + ".\n" +
+                "• Fecha de envío registrada: " + fechaEnvioTexto + ".\n" +
+                "• Si todo es correcto, puede enviar su solicitud para revisión."
         );
         area.setEditable(false);
         area.setOpaque(false);
@@ -235,10 +315,10 @@ public class PantallaRevisionSolicitud extends JFrame {
                 new LineBorder(new Color(214, 214, 214), 1, true),
                 new EmptyBorder(8, 16, 8, 16)
         ));
-        
-        btnAtras.addActionListener(new ActionListener(){
+
+        btnAtras.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 setVisible(false);
                 coordinador.mostrarCatalagoVehoculos();
             }
@@ -254,10 +334,10 @@ public class PantallaRevisionSolicitud extends JFrame {
                 new LineBorder(COLOR_VERDE, 1, true),
                 new EmptyBorder(8, 16, 8, 16)
         ));
-        
-        btnEnviar.addActionListener(new ActionListener(){
+
+        btnEnviar.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 setVisible(false);
                 coordinador.mostrarConfirmacionSolicitud();
             }
@@ -385,5 +465,20 @@ public class PantallaRevisionSolicitud extends JFrame {
                 new EmptyBorder(6, 8, 6, 8)
         ));
         return chip;
+    }
+
+    private String valorSeguro(String valor) {
+        return (valor == null || valor.trim().isEmpty()) ? "No disponible" : valor;
+    }
+
+    private String formatearMonedaNullable(Double valor) {
+        return valor == null ? "No disponible" : formatoMoneda.format(valor);
+    }
+
+    private String obtenerNombreArchivo(String ruta) {
+        if (ruta == null || ruta.trim().isEmpty()) {
+            return "No disponible";
+        }
+        return new File(ruta).getName();
     }
 }

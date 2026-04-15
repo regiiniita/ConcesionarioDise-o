@@ -1,15 +1,38 @@
 package presentacion;
 
 import controlador.Coordinador;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class PantallaFormularioInformacionFinanciera extends JFrame {
-    
+
     private final Coordinador coordinador;
 
     private static final Color COLOR_FONDO = new Color(239, 242, 247);
@@ -20,11 +43,39 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
     private static final Color COLOR_INPUT = new Color(244, 244, 246);
     private static final Color COLOR_SUBIDA = new Color(148, 163, 184);
 
+    // Componentes del formulario
+    private JComboBox<String> comboTipoEmpleo;
+    private JTextField txtEmpresaActividad;
+    private JTextField txtPuestoActividad;
+    private JComboBox<String> comboAntiguedad;
+    private JComboBox<String> comboTipoContrato;
+
+    private JTextField txtIngresoBruto;
+    private JTextField txtIngresoNeto;
+    private JTextField txtGastosMensuales;
+
+    // Variables donde se guardará la información
+    private String tipoEmpleoSeleccionado;
+    private String empresaActividadEconomica;
+    private String puestoActividadPrincipal;
+    private String antiguedadLaboralSeleccionada;
+    private String tipoContratoSeleccionado;
+    private String ingresoMensualBruto;
+    private String ingresoMensualNeto;
+    private String gastosMensuales;
+
+    private String rutaComprobanteIngresos;
+    private String rutaComprobanteEmpleo;
+
+    // Labels para mostrar nombre del archivo elegido
+    private JLabel lblArchivoIngresos;
+    private JLabel lblArchivoEmpleo;
+
     public PantallaFormularioInformacionFinanciera(Coordinador coordinador) {
         this.coordinador = coordinador;
-        
+
         setTitle("Información Financiera");
-        setSize(800, 800);
+        setSize(800, 850);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -61,19 +112,10 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
         JPanel izquierda = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         izquierda.setOpaque(false);
 
-//        JLabel icono = new JLabel("◉");
-//        icono.setOpaque(true);
-//        icono.setBackground(COLOR_AZUL);
-//        icono.setForeground(Color.WHITE);
-//        icono.setHorizontalAlignment(SwingConstants.CENTER);
-//        icono.setPreferredSize(new Dimension(26, 26));
-//        icono.setFont(new Font("Segoe UI Symbol", Font.BOLD, 13));
-
         JLabel titulo = new JLabel("Información Financiera");
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 17));
         titulo.setForeground(COLOR_TEXTO);
 
-//        izquierda.add(icono);
         izquierda.add(titulo);
 
         JLabel paso = new JLabel("Paso 2 de 4");
@@ -112,31 +154,39 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        grid.add(crearComboCampo("Tipo de Empleo *", "Seleccionar tipo",
-                new String[]{"Seleccionar tipo", "Empleado", "Independiente", "Empresario", "Jubilado"}), gbc);
+        comboTipoEmpleo = crearComboCampoComponente(
+                new String[]{"Seleccionar tipo", "Empleado", "Independiente", "Empresario", "Jubilado"}
+        );
+        grid.add(crearPanelCampoConComponente("Tipo de Empleo *", comboTipoEmpleo, 320, 58), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 12, 0);
-        grid.add(crearCampo("Nombre de Empresa / Actividad Económica *", "Corporación ABC"), gbc);
+        txtEmpresaActividad = crearTextFieldBase("Corporación ABC", 320);
+        grid.add(crearPanelCampoConComponente("Nombre de Empresa / Actividad Económica *", txtEmpresaActividad, 320, 58), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 0, 12, 14);
-        grid.add(crearCampo("Puesto / Actividad Principal *", "Gerente de Ventas"), gbc);
+        txtPuestoActividad = crearTextFieldBase("Gerente de Ventas", 320);
+        grid.add(crearPanelCampoConComponente("Puesto / Actividad Principal *", txtPuestoActividad, 320, 58), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 0, 12, 0);
-        grid.add(crearComboCampo("Antigüedad Laboral *", "Seleccionar antigüedad",
-                new String[]{"Seleccionar antigüedad", "Menos de 1 año", "1 a 3 años", "3 a 5 años", "Más de 5 años"}), gbc);
+        comboAntiguedad = crearComboCampoComponente(
+                new String[]{"Seleccionar antigüedad", "Menos de 1 año", "1 a 3 años", "3 a 5 años", "Más de 5 años"}
+        );
+        grid.add(crearPanelCampoConComponente("Antigüedad Laboral *", comboAntiguedad, 320, 58), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 0, 0);
-        grid.add(crearComboCampoAncho("Tipo de Contrato *", "Seleccionar tipo de contrato",
-                new String[]{"Seleccionar tipo de contrato", "Tiempo completo", "Medio tiempo", "Temporal", "Por honorarios", "Indefinido"}), gbc);
+        comboTipoContrato = crearComboCampoComponente(
+                new String[]{"Seleccionar tipo de contrato", "Tiempo completo", "Medio tiempo", "Temporal", "Por honorarios", "Indefinido"}
+        );
+        grid.add(crearPanelCampoConComponente("Tipo de Contrato *", comboTipoContrato, 654, 62), gbc);
 
         card.add(grid);
         return card;
@@ -168,25 +218,28 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        grid.add(crearCampo("Ingreso Mensual Bruto (MXN) *", "25000"), gbc);
+        txtIngresoBruto = crearTextFieldBase("25000", 320);
+        grid.add(crearPanelCampoConComponente("Ingreso Mensual Bruto (MXN) *", txtIngresoBruto, 320, 58), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 12, 0);
-        grid.add(crearCampo("Ingreso Mensual Neto (MXN) *", "20000"), gbc);
+        txtIngresoNeto = crearTextFieldBase("20000", 320);
+        grid.add(crearPanelCampoConComponente("Ingreso Mensual Neto (MXN) *", txtIngresoNeto, 320, 58), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 0, 0);
-        grid.add(crearCampoDomicilio("Gastos Mensuales (MXN) *", "8000"), gbc);
+        txtGastosMensuales = crearTextFieldBase("8000", 654);
+        grid.add(crearPanelCampoConComponente("Gastos Mensuales (MXN) *", txtGastosMensuales, 654, 58), gbc);
 
         card.add(grid);
         return card;
     }
 
     private JPanel crearCardDocumentosFinancieros() {
-        JPanel card = crearCardBase(690, 195);
+        JPanel card = crearCardBase(690, 220);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 
         JLabel seccion = new JLabel("Documentos Financieros");
@@ -200,11 +253,20 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
         JPanel contenedor = new JPanel(new GridLayout(1, 2, 12, 0));
         contenedor.setOpaque(false);
         contenedor.setAlignmentX(Component.LEFT_ALIGNMENT);
-        contenedor.setPreferredSize(new Dimension(654, 105));
-        contenedor.setMaximumSize(new Dimension(654, 105));
+        contenedor.setPreferredSize(new Dimension(654, 130));
+        contenedor.setMaximumSize(new Dimension(654, 130));
 
-        contenedor.add(crearCajaDocumento("Comprobante de Ingresos *", "Recibos de nómina, estados de cuenta o facturas"));
-        contenedor.add(crearCajaDocumento("Comprobante de Empleo *", "Carta laboral o registro de negocio"));
+        contenedor.add(crearCajaDocumentoSubida(
+                "Comprobante de Ingresos *",
+                "Recibos de nómina, estados de cuenta o facturas",
+                true
+        ));
+
+        contenedor.add(crearCajaDocumentoSubida(
+                "Comprobante de Empleo *",
+                "Carta laboral o registro de negocio",
+                false
+        ));
 
         card.add(contenedor);
         return card;
@@ -226,13 +288,10 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
                 new LineBorder(new Color(214, 214, 214), 1, true),
                 new EmptyBorder(6, 16, 6, 16)
         ));
-        
-        btnAtras.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                setVisible(false);
-                coordinador.mostrarFormularioDatosPersonales();
-            }
+
+        btnAtras.addActionListener((ActionEvent e) -> {
+            setVisible(false);
+            coordinador.mostrarFormularioDatosPersonales();
         });
 
         JButton btnContinuar = new JButton("Continuar a Información del Vehículo");
@@ -245,13 +304,18 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
                 new LineBorder(COLOR_AZUL, 1, true),
                 new EmptyBorder(8, 16, 8, 16)
         ));
-        
-        btnContinuar.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                setVisible(false);
-                coordinador.mostrarCatalagoVehoculos();
+
+        btnContinuar.addActionListener((ActionEvent e) -> {
+            if (!validarFormulario()) {
+                return;
             }
+
+            guardarDatosEnVariables();
+
+            coordinador.agregarInformacionFinanciera(getTipoEmpleoSeleccionado(), getPuestoActividadPrincipal(), getTipoContratoSeleccionado(), getEmpresaActividadEconomica(), getAntiguedadLaboralSeleccionada() , Double.parseDouble(getIngresoMensualBruto()), Double.parseDouble(getIngresoMensualNeto()), Double.parseDouble(getGastosMensuales()), getRutaComprobanteIngresos(), getRutaComprobanteEmpleo());
+
+            setVisible(false);
+            coordinador.mostrarCatalagoVehoculos();
         });
 
         panel.add(btnAtras, BorderLayout.WEST);
@@ -274,20 +338,32 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
         return card;
     }
 
-    private JPanel crearCampo(String labelText, String placeholder) {
+    private JPanel crearPanelCampoConComponente(String labelText, Component componente, int ancho, int alto) {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setPreferredSize(new Dimension(320, 58));
-        panel.setMinimumSize(new Dimension(320, 58));
-        panel.setMaximumSize(new Dimension(320, 58));
+        panel.setPreferredSize(new Dimension(ancho, alto));
+        panel.setMinimumSize(new Dimension(ancho, alto));
+        panel.setMaximumSize(new Dimension(ancho, alto));
 
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("Segoe UI", Font.BOLD, 12));
         label.setForeground(Color.BLACK);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JTextField campo = new JTextField(placeholder);
+        if (componente instanceof JComponent jComp) {
+            jComp.setAlignmentX(Component.LEFT_ALIGNMENT);
+        }
+
+        panel.add(label);
+        panel.add(Box.createVerticalStrut(4));
+        panel.add(componente);
+
+        return panel;
+    }
+
+    private JTextField crearTextFieldBase(String texto, int ancho) {
+        JTextField campo = new JTextField(texto);
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         campo.setForeground(COLOR_TEXTO_SECUNDARIO);
         campo.setBackground(COLOR_INPUT);
@@ -295,119 +371,30 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
                 new LineBorder(COLOR_INPUT, 1, true),
                 new EmptyBorder(7, 10, 7, 10)
         ));
-        campo.setPreferredSize(new Dimension(320, 30));
-        campo.setMinimumSize(new Dimension(320, 30));
-        campo.setMaximumSize(new Dimension(320, 30));
+        campo.setPreferredSize(new Dimension(ancho, 30));
+        campo.setMinimumSize(new Dimension(ancho, 30));
+        campo.setMaximumSize(new Dimension(ancho, 30));
         campo.setCaretColor(COLOR_TEXTO);
-        campo.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(campo);
-
-        return panel;
+        return campo;
     }
 
-    private JPanel crearCampoDomicilio(String labelText, String placeholder) {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setPreferredSize(new Dimension(654, 58));
-        panel.setMinimumSize(new Dimension(654, 58));
-        panel.setMaximumSize(new Dimension(654, 58));
-
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        label.setForeground(Color.BLACK);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JTextField campo = new JTextField(placeholder);
-        campo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        campo.setForeground(COLOR_TEXTO_SECUNDARIO);
-        campo.setBackground(COLOR_INPUT);
-        campo.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(COLOR_INPUT, 1, true),
-                new EmptyBorder(7, 10, 7, 10)
-        ));
-        campo.setPreferredSize(new Dimension(654, 30));
-        campo.setMinimumSize(new Dimension(654, 30));
-        campo.setMaximumSize(new Dimension(654, 30));
-        campo.setCaretColor(COLOR_TEXTO);
-        campo.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(campo);
-
-        return panel;
-    }
-
-    private JPanel crearComboCampo(String labelText, String primerItem, String[] opciones) {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setPreferredSize(new Dimension(320, 58));
-        panel.setMinimumSize(new Dimension(320, 58));
-        panel.setMaximumSize(new Dimension(320, 58));
-
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        label.setForeground(Color.BLACK);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
+    private JComboBox<String> crearComboCampoComponente(String[] opciones) {
         JComboBox<String> combo = new JComboBox<>(opciones);
-        combo.setSelectedItem(primerItem);
         combo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         combo.setForeground(COLOR_TEXTO_SECUNDARIO);
         combo.setBackground(COLOR_INPUT);
         combo.setPreferredSize(new Dimension(320, 30));
         combo.setMinimumSize(new Dimension(320, 30));
-        combo.setMaximumSize(new Dimension(320, 30));
-        combo.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(combo);
-
-        return panel;
-    }
-
-    private JPanel crearComboCampoAncho(String labelText, String primerItem, String[] opciones) {
-        JPanel panel = new JPanel();
-        panel.setOpaque(false);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setPreferredSize(new Dimension(654, 62));
-        panel.setMinimumSize(new Dimension(654, 62));
-        panel.setMaximumSize(new Dimension(654, 62));
-
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        label.setForeground(Color.BLACK);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JComboBox<String> combo = new JComboBox<>(opciones);
-        combo.setSelectedItem(primerItem);
-        combo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        combo.setForeground(COLOR_TEXTO_SECUNDARIO);
-        combo.setBackground(COLOR_INPUT);
-        combo.setPreferredSize(new Dimension(654, 30));
-        combo.setMinimumSize(new Dimension(654, 30));
         combo.setMaximumSize(new Dimension(654, 30));
-        combo.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panel.add(label);
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(combo);
-
-        return panel;
+        return combo;
     }
 
-    private JPanel crearCajaDocumento(String titulo, String subtitulo) {
+    private JPanel crearCajaDocumentoSubida(String titulo, String subtitulo, boolean esIngresos) {
         JPanel caja = new JPanel();
         caja.setOpaque(false);
         caja.setLayout(new BoxLayout(caja, BoxLayout.Y_AXIS));
         caja.setBorder(BorderFactory.createDashedBorder(new Color(203, 213, 225), 4, 4, 2, true));
-        caja.setPreferredSize(new Dimension(320, 100));
+        caja.setPreferredSize(new Dimension(320, 130));
 
         JLabel icono = new JLabel("⇪");
         icono.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 24));
@@ -426,14 +413,166 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
         lblSubtitulo.setHorizontalAlignment(SwingConstants.CENTER);
         lblSubtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JButton btnSeleccionar = new JButton("Seleccionar archivo");
+        btnSeleccionar.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        btnSeleccionar.setBackground(COLOR_AZUL);
+        btnSeleccionar.setForeground(Color.BLACK);
+        btnSeleccionar.setFocusPainted(false);
+        btnSeleccionar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnSeleccionar.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblArchivo = new JLabel("Ningún archivo seleccionado");
+        lblArchivo.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        lblArchivo.setForeground(COLOR_TEXTO_SECUNDARIO);
+        lblArchivo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        btnSeleccionar.addActionListener((ActionEvent e) -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Seleccionar archivo");
+            chooser.setAcceptAllFileFilterUsed(true);
+            chooser.addChoosableFileFilter(new FileNameExtensionFilter(
+                    "Documentos e imágenes", "pdf", "jpg", "jpeg", "png"
+            ));
+
+            int resultado = chooser.showOpenDialog(this);
+
+            if (resultado == JFileChooser.APPROVE_OPTION) {
+                File archivo = chooser.getSelectedFile();
+
+                if (esIngresos) {
+                    rutaComprobanteIngresos = archivo.getAbsolutePath();
+                    lblArchivoIngresos.setText(archivo.getName());
+                } else {
+                    rutaComprobanteEmpleo = archivo.getAbsolutePath();
+                    lblArchivoEmpleo.setText(archivo.getName());
+                }
+            }
+        });
+
+        if (esIngresos) {
+            lblArchivoIngresos = lblArchivo;
+        } else {
+            lblArchivoEmpleo = lblArchivo;
+        }
+
         caja.add(Box.createVerticalGlue());
         caja.add(icono);
         caja.add(Box.createVerticalStrut(4));
         caja.add(lblTitulo);
         caja.add(Box.createVerticalStrut(4));
         caja.add(lblSubtitulo);
+        caja.add(Box.createVerticalStrut(8));
+        caja.add(btnSeleccionar);
+        caja.add(Box.createVerticalStrut(6));
+        caja.add(lblArchivo);
         caja.add(Box.createVerticalGlue());
 
         return caja;
+    }
+
+    private boolean validarFormulario() {
+        if (comboTipoEmpleo.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione el tipo de empleo.");
+            return false;
+        }
+
+        if (txtEmpresaActividad.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el nombre de empresa o actividad económica.");
+            return false;
+        }
+
+        if (txtPuestoActividad.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el puesto o actividad principal.");
+            return false;
+        }
+
+        if (comboAntiguedad.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione la antigüedad laboral.");
+            return false;
+        }
+
+        if (comboTipoContrato.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione el tipo de contrato.");
+            return false;
+        }
+
+        if (txtIngresoBruto.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el ingreso mensual bruto.");
+            return false;
+        }
+
+        if (txtIngresoNeto.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el ingreso mensual neto.");
+            return false;
+        }
+
+        if (txtGastosMensuales.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese los gastos mensuales.");
+            return false;
+        }
+
+        if (rutaComprobanteIngresos == null || rutaComprobanteIngresos.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Seleccione el comprobante de ingresos.");
+            return false;
+        }
+
+        if (rutaComprobanteEmpleo == null || rutaComprobanteEmpleo.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Seleccione el comprobante de empleo.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void guardarDatosEnVariables() {
+        tipoEmpleoSeleccionado = comboTipoEmpleo.getSelectedItem().toString();
+        empresaActividadEconomica = txtEmpresaActividad.getText().trim();
+        puestoActividadPrincipal = txtPuestoActividad.getText().trim();
+        antiguedadLaboralSeleccionada = comboAntiguedad.getSelectedItem().toString();
+        tipoContratoSeleccionado = comboTipoContrato.getSelectedItem().toString();
+
+        ingresoMensualBruto = txtIngresoBruto.getText().trim();
+        ingresoMensualNeto = txtIngresoNeto.getText().trim();
+        gastosMensuales = txtGastosMensuales.getText().trim();
+    }
+
+    public String getTipoEmpleoSeleccionado() {
+        return tipoEmpleoSeleccionado;
+    }
+
+    public String getEmpresaActividadEconomica() {
+        return empresaActividadEconomica;
+    }
+
+    public String getPuestoActividadPrincipal() {
+        return puestoActividadPrincipal;
+    }
+
+    public String getAntiguedadLaboralSeleccionada() {
+        return antiguedadLaboralSeleccionada;
+    }
+
+    public String getTipoContratoSeleccionado() {
+        return tipoContratoSeleccionado;
+    }
+
+    public String getIngresoMensualBruto() {
+        return ingresoMensualBruto;
+    }
+
+    public String getIngresoMensualNeto() {
+        return ingresoMensualNeto;
+    }
+
+    public String getGastosMensuales() {
+        return gastosMensuales;
+    }
+
+    public String getRutaComprobanteIngresos() {
+        return rutaComprobanteIngresos;
+    }
+
+    public String getRutaComprobanteEmpleo() {
+        return rutaComprobanteEmpleo;
     }
 }

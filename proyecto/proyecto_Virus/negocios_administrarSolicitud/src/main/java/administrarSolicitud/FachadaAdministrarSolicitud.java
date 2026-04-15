@@ -18,8 +18,8 @@ public class FachadaAdministrarSolicitud implements IAdministrarSolicitud{
     
     private ControlSolicitud controlSolicitud;
 
-    public FachadaAdministrarSolicitud(ControlSolicitud controlSolicitud) {
-        this.controlSolicitud = controlSolicitud;
+    public FachadaAdministrarSolicitud() {
+        this.controlSolicitud = new ControlSolicitud();
     }
 
     @Override

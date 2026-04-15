@@ -27,11 +27,13 @@ public class SolicitudDTO {
     private Double gastosMensuales;
     private String rutaComprobanteIngresos;
     private String rutaComprobanteEmpleo;
+    private Double enganche;
+    private LocalDateTime fechaCreacion;
 
     public SolicitudDTO() {
     }
 
-    public SolicitudDTO(String id, LocalDateTime fechaEnvio, EstadoSolicitudDTO estado, VehiculoDTO vehiculo, ClienteDTO cliente, String tipoEmpleo, String puesto, String tipoContrato, String nombreEmpresa, String antiguedadLaboral, Double ingresoMensualBruto, Double ingresoMensualNeto, Double gastosMensuales, String rutaComprobanteIngresos, String rutaComprobanteEmpleo) {
+    public SolicitudDTO(String id, LocalDateTime fechaEnvio, EstadoSolicitudDTO estado, VehiculoDTO vehiculo, ClienteDTO cliente, String tipoEmpleo, String puesto, String tipoContrato, String nombreEmpresa, String antiguedadLaboral, Double ingresoMensualBruto, Double ingresoMensualNeto, Double gastosMensuales, String rutaComprobanteIngresos, String rutaComprobanteEmpleo, Double enganche, LocalDateTime fechaCreacion) {
         this.id = id;
         this.fechaEnvio = fechaEnvio;
         this.estado = estado;
@@ -47,7 +49,14 @@ public class SolicitudDTO {
         this.gastosMensuales = gastosMensuales;
         this.rutaComprobanteIngresos = rutaComprobanteIngresos;
         this.rutaComprobanteEmpleo = rutaComprobanteEmpleo;
+        this.enganche = enganche;
+        this.fechaCreacion = fechaCreacion;
     }
+
+    
+
+
+    
 
     public String getId() {
         return id;
@@ -167,5 +176,21 @@ public class SolicitudDTO {
 
     public void setRutaComprobanteEmpleo(String rutaComprobanteEmpleo) {
         this.rutaComprobanteEmpleo = rutaComprobanteEmpleo;
+    }
+
+    public Double getEnganche() {
+        return enganche;
+    }
+
+    public void setEnganche(Double enganche) {
+        this.enganche = enganche;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
 }

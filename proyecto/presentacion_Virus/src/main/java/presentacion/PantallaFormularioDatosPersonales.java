@@ -10,11 +10,15 @@ import java.awt.event.ActionListener;
 import dto.ClienteDTO;
 
 public class PantallaFormularioDatosPersonales extends JFrame {
-    
+
     private final Coordinador coordinador;
     private JTextField txtNombre, txtApellidos, txtEdad, txtCURP, txtRFC, txtTelefono, txtCorreo, txtDomicilio;
     private JComboBox<String> cbEstadoCivil;
     private JLabel lblArchivoCurp, lblArchivoRfc, lblArchivoIne;
+
+    private String rutaArchivoCurp;
+    private String rutaArchivoRfc;
+    private String rutaArchivoIne;
 
     private static final Color COLOR_FONDO = new Color(239, 242, 247);
     private static final Color COLOR_AZUL = new Color(37, 99, 235);
@@ -26,9 +30,9 @@ public class PantallaFormularioDatosPersonales extends JFrame {
 
     public PantallaFormularioDatosPersonales(Coordinador coordinador) {
         this.coordinador = coordinador;
-        
+
         inicializarCampos();
-        
+
         setTitle("Información Personal");
         setSize(1000, 910);
         setLocationRelativeTo(null);
@@ -54,7 +58,7 @@ public class PantallaFormularioDatosPersonales extends JFrame {
 
         fondo.add(contenedorCentral);
     }
-    
+
     private void inicializarCampos() {
         txtNombre = new JTextField();
         txtApellidos = new JTextField();
@@ -76,19 +80,10 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         JPanel izquierda = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         izquierda.setOpaque(false);
 
-//        JLabel icono = new JLabel("◉");
-//        icono.setOpaque(true);
-//        icono.setBackground(COLOR_AZUL);
-//        icono.setForeground(Color.WHITE);
-//        icono.setHorizontalAlignment(SwingConstants.CENTER);
-//        icono.setPreferredSize(new Dimension(26, 26));
-//        icono.setFont(new Font("Segoe UI Symbol", Font.BOLD, 13));
-
         JLabel titulo = new JLabel("Información Personal");
         titulo.setFont(new Font("Segoe UI", Font.PLAIN, 17));
         titulo.setForeground(COLOR_TEXTO);
 
-//        izquierda.add(icono);
         izquierda.add(titulo);
 
         JLabel paso = new JLabel("Paso 1 de 4");
@@ -219,10 +214,10 @@ public class PantallaFormularioDatosPersonales extends JFrame {
                 new LineBorder(new Color(214, 214, 214), 1, true),
                 new EmptyBorder(6, 16, 6, 16)
         ));
-        
-        btnAtras.addActionListener(new ActionListener(){
+
+        btnAtras.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 setVisible(false);
                 coordinador.iniciarSistema();
             }
@@ -238,17 +233,30 @@ public class PantallaFormularioDatosPersonales extends JFrame {
                 new LineBorder(COLOR_AZUL, 1, true),
                 new EmptyBorder(8, 16, 8, 16)
         ));
-        
+
         btnContinuar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!validarFormulario()) {
+                    return;
+                }
+
                 ClienteDTO cliente = new ClienteDTO();
                 cliente.setIdCliente("CL-999");
-                cliente.setNombre(txtNombre.getText() + " " + txtApellidos.getText());
-                cliente.setRfc(txtRFC.getText());
-                cliente.setDireccion(txtDomicilio.getText());
+                cliente.setNombre(txtNombre.getText().trim() + " " + txtApellidos.getText().trim());
+                cliente.setRfc(txtRFC.getText().trim());
+                cliente.setDireccion(txtDomicilio.getText().trim());
+                cliente.setCorreo(txtCorreo.getText().trim());
+                cliente.setCurp(txtCURP.getText().trim());
+                cliente.setEstadoCivil(cbEstadoCivil.getSelectedItem().toString());
+                cliente.setTelefono(txtTelefono.getText().trim());
+                cliente.setRutaCurp(rutaArchivoCurp);
+                cliente.setRutaRfc(rutaArchivoRfc);
+                cliente.setRutaIdentificacion(rutaArchivoCurp);
+                cliente.setIdCliente(String.valueOf(System.currentTimeMillis()));
 
                 coordinador.guardarDatosPersonales(cliente);
+                coordinador.asignarClienteASolicitud(cliente);
 
                 setVisible(false);
                 coordinador.mostrarFormularioInformacionFinanciera();
@@ -354,24 +362,24 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         label.setForeground(Color.BLACK);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JComboBox<String> combo = new JComboBox<>(new String[]{
-                primerItem,
-                "Soltero(a)",
-                "Casado(a)",
-                "Divorciado(a)",
-                "Viudo(a)"
+        cbEstadoCivil = new JComboBox<>(new String[]{
+            primerItem,
+            "Soltero(a)",
+            "Casado(a)",
+            "Divorciado(a)",
+            "Viudo(a)"
         });
-        combo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        combo.setForeground(COLOR_TEXTO_SECUNDARIO);
-        combo.setBackground(COLOR_INPUT);
-        combo.setPreferredSize(new Dimension(320, 30));
-        combo.setMinimumSize(new Dimension(320, 30));
-        combo.setMaximumSize(new Dimension(320, 30));
-        combo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cbEstadoCivil.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        cbEstadoCivil.setForeground(COLOR_TEXTO_SECUNDARIO);
+        cbEstadoCivil.setBackground(COLOR_INPUT);
+        cbEstadoCivil.setPreferredSize(new Dimension(320, 30));
+        cbEstadoCivil.setMinimumSize(new Dimension(320, 30));
+        cbEstadoCivil.setMaximumSize(new Dimension(320, 30));
+        cbEstadoCivil.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         panel.add(label);
         panel.add(Box.createVerticalStrut(4));
-        panel.add(combo);
+        panel.add(cbEstadoCivil);
 
         return panel;
     }
@@ -382,7 +390,7 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         caja.setLayout(new BoxLayout(caja, BoxLayout.Y_AXIS));
         caja.setBorder(BorderFactory.createDashedBorder(new Color(203, 213, 225), 4, 4, 2, true));
         caja.setPreferredSize(new Dimension(210, 95));
-        caja.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Cursor de mano para indicar que es clicable
+        caja.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         JLabel icono = new JLabel("⇪");
         icono.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 24));
@@ -410,7 +418,9 @@ public class PantallaFormularioDatosPersonales extends JFrame {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 JFileChooser buscador = new JFileChooser();
-                buscador.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos de imagen y PDF", "jpg", "png", "pdf"));
+                buscador.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(
+                        "Archivos de imagen y PDF", "jpg", "jpeg", "png", "pdf"
+                ));
 
                 int resultado = buscador.showOpenDialog(PantallaFormularioDatosPersonales.this);
 
@@ -419,10 +429,130 @@ public class PantallaFormularioDatosPersonales extends JFrame {
                     lblSubtitulo.setText("✓ " + archivoSeleccionado.getName());
                     lblSubtitulo.setForeground(new Color(22, 163, 74));
                     caja.setBorder(BorderFactory.createDashedBorder(new Color(22, 163, 74), 4, 4, 2, true));
+
+                    String ruta = archivoSeleccionado.getAbsolutePath();
+
+                    if (lblSubtitulo == lblArchivoCurp) {
+                        rutaArchivoCurp = ruta;
+                    } else if (lblSubtitulo == lblArchivoRfc) {
+                        rutaArchivoRfc = ruta;
+                    } else if (lblSubtitulo == lblArchivoIne) {
+                        rutaArchivoIne = ruta;
+                    }
                 }
             }
         });
 
         return caja;
+    }
+
+    private boolean validarFormulario() {
+        if (txtNombre.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el nombre.");
+            txtNombre.requestFocus();
+            return false;
+        }
+
+        if (txtApellidos.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese los apellidos.");
+            txtApellidos.requestFocus();
+            return false;
+        }
+
+        if (txtEdad.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese la edad.");
+            txtEdad.requestFocus();
+            return false;
+        }
+
+        try {
+            int edad = Integer.parseInt(txtEdad.getText().trim());
+            if (edad < 18 || edad > 100) {
+                JOptionPane.showMessageDialog(this, "La edad debe estar entre 18 y 100 años.");
+                txtEdad.requestFocus();
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La edad debe ser numérica.");
+            txtEdad.requestFocus();
+            return false;
+        }
+
+        if (cbEstadoCivil == null || cbEstadoCivil.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione el estado civil.");
+            cbEstadoCivil.requestFocus();
+            return false;
+        }
+
+        if (txtCURP.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese la CURP.");
+            txtCURP.requestFocus();
+            return false;
+        }
+
+        if (!txtCURP.getText().trim().matches("^[A-Z]{4}\\d{6}[HM][A-Z]{5}[A-Z0-9]\\d$")) {
+            JOptionPane.showMessageDialog(this, "La CURP no tiene un formato válido.");
+            txtCURP.requestFocus();
+            return false;
+        }
+
+        if (txtRFC.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el RFC.");
+            txtRFC.requestFocus();
+            return false;
+        }
+
+        if (!txtRFC.getText().trim().matches("^[A-ZÑ&]{4}\\d{6}[A-Z0-9]{3}$")) {
+            JOptionPane.showMessageDialog(this, "El RFC no tiene un formato válido.");
+            txtRFC.requestFocus();
+            return false;
+        }
+
+        if (txtTelefono.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el número de teléfono.");
+            txtTelefono.requestFocus();
+            return false;
+        }
+
+        if (!txtTelefono.getText().trim().matches("^\\d{10}$")) {
+            JOptionPane.showMessageDialog(this, "El teléfono debe contener exactamente 10 dígitos.");
+            txtTelefono.requestFocus();
+            return false;
+        }
+
+        if (txtCorreo.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el correo electrónico.");
+            txtCorreo.requestFocus();
+            return false;
+        }
+
+        if (!txtCorreo.getText().trim().matches("^[\\w.-]+@[\\w.-]+\\.[A-Za-z]{2,}$")) {
+            JOptionPane.showMessageDialog(this, "El correo electrónico no es válido.");
+            txtCorreo.requestFocus();
+            return false;
+        }
+
+        if (txtDomicilio.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el domicilio.");
+            txtDomicilio.requestFocus();
+            return false;
+        }
+
+        if (rutaArchivoCurp == null || rutaArchivoCurp.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar el archivo de CURP.");
+            return false;
+        }
+
+        if (rutaArchivoRfc == null || rutaArchivoRfc.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar el archivo de RFC.");
+            return false;
+        }
+
+        if (rutaArchivoIne == null || rutaArchivoIne.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar el archivo de identificación oficial.");
+            return false;
+        }
+
+        return true;
     }
 }
