@@ -8,7 +8,6 @@
     <modules>
         <module>../presentacion_Virus</module>
         <module>negocios_administrarSolicitud</module>
-        <module>negocio_virus</module>
         <module>negocios_administrarCliente</module>
         <module>dto_negocios</module>
     </modules>
