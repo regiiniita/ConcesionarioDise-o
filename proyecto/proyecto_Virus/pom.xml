@@ -10,6 +10,7 @@
         <module>negocios_administrarSolicitud</module>
         <module>negocios_administrarCliente</module>
         <module>dto_negocios</module>
+        <module>negocios_administrarVehiculo</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
