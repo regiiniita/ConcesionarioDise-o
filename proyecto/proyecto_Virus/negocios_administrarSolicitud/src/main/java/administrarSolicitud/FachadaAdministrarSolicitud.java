@@ -15,43 +15,30 @@ import javax.swing.JOptionPane;
  * @author
  */
 public class FachadaAdministrarSolicitud implements IAdministrarSolicitud{
+    
+    private ControlSolicitud controlSolicitud;
+
+    public FachadaAdministrarSolicitud(ControlSolicitud controlSolicitud) {
+        this.controlSolicitud = controlSolicitud;
+    }
 
     @Override
     public SolicitudDTO iniciarNuevaSolicitud(ClienteDTO cliente) {
-        SolicitudDTO nueva = new SolicitudDTO();
-        nueva.setCliente(cliente);
-        nueva.setEstado(EstadoSolicitudDTO.BORRADOR);
-        return nueva;
+        return this.controlSolicitud.iniciarNuevaSolicitud(cliente);
     }
 
     @Override
     public SolicitudDTO agregarDatosFinancieros(SolicitudDTO solicitud, String tipoEmpleo, String puesto, String tipoContrato, String nombreEmpresa, String antiguedadLaboral, Double ingresoMensualBruto, Double ingresoMensualNeto, Double gastosMensuales, String rutaComprobanteIngresos, String rutaComprobanteEmpleo) {
-        solicitud.setTipoEmpleo(tipoEmpleo);
-        solicitud.setPuesto(puesto);
-        solicitud.setTipoContrato(tipoContrato);
-        solicitud.setNombreEmpresa(nombreEmpresa);
-        solicitud.setAntiguedadLaboral(antiguedadLaboral);
-        solicitud.setIngresoMensualBruto(ingresoMensualBruto);
-        solicitud.setIngresoMensualNeto(ingresoMensualNeto);
-        solicitud.setGastosMensuales(gastosMensuales);
-        solicitud.setRutaComprobanteIngresos(rutaComprobanteIngresos);
-        solicitud.setRutaComprobanteEmpleo(rutaComprobanteEmpleo);
-        
-        return solicitud;
+        return this.controlSolicitud.agregarDatosFinancieros(solicitud, tipoEmpleo, puesto, tipoContrato, nombreEmpresa, antiguedadLaboral, ingresoMensualBruto, ingresoMensualNeto, gastosMensuales, rutaComprobanteIngresos, rutaComprobanteEmpleo);
     }
 
     @Override
     public SolicitudDTO confirmarEnvioSolicitud(SolicitudDTO solicitud) {
-        solicitud.setEstado(EstadoSolicitudDTO.ENVIADA);
-        
-        //persistir solicitud
-        
-        JOptionPane.showMessageDialog(null, "Solicitud enviada");
-        return solicitud;
+        return this.controlSolicitud.confirmarEnvioSolicitud(solicitud);
     }
 
     @Override
     public List<SolicitudDTO> obtenerSolicitudesPorCliente(String idCliente) {
-        return null;
+        return this.controlSolicitud.obtenerSolicitudesPorCliente(idCliente);
     }
 }
