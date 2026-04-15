@@ -20,6 +20,8 @@ public class Coordinador {
     // Subsistemas (Atributos de Interface)
     private final IAdministrarCliente administrarCliente;
     private final IAdministrarVehiculo administrarVehiculo;
+    
+    private ClienteDTO cliente;
 
 
     public Coordinador() {
@@ -33,7 +35,7 @@ public class Coordinador {
      * @param cliente
      */
     public void guardarDatosPersonales(ClienteDTO cliente) {
-        this.administrarCliente.guardarDatosPersonales(cliente);
+        this.cliente = this.administrarCliente.guardarDatosPersonales(cliente);
         System.out.println("Datos de cliente recibidos y enviados al subsistema.");
     }
 
