@@ -13,4 +13,11 @@
         <exec.mainClass>com.mycompany.negocio_virus.Negocio_virus</exec.mainClass>
     </properties>
     <name>negocios_administrarSolicitud</name>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>dto_negocios</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

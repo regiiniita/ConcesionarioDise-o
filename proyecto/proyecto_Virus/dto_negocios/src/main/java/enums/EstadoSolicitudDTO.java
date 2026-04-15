@@ -13,5 +13,6 @@ public enum EstadoSolicitudDTO {
     EN_REVISION,
     RECHAZADA,
     ENVIADA,
-    INFORMACION_REQUERIDA
+    INFORMACION_REQUERIDA,
+    BORRADOR
 }
