@@ -10,7 +10,7 @@ import dto.ClienteDTO;
  * Fachada del subsistema AdministrarCliente.
  * Implementa la interfaz IAdministrarCliente y actúa como el único punto de 
  * acceso a la funcionalidad interna del subsistema desde la capa de presentación.
- * * @author regin
+ * @author regin
  */
 public class FacadeAdministrarCliente implements IAdministrarCliente {
 
