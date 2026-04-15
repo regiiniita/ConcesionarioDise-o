@@ -1,5 +1,12 @@
 package controlador;
 
+import administrarCliente.FacadeAdministrarCliente;
+import administrarCliente.IAdministrarCliente;
+import administrarVehiculo.FacadeAdministrarVehiculo;
+import administrarVehiculo.IAdministrarVehiculo;
+import dto.ClienteDTO;
+import dto.VehiculoDTO;
+import java.util.List;
 import presentacion.*;
 
 public class Coordinador {
@@ -10,8 +17,32 @@ public class Coordinador {
     private PantallaRevisionSolicitud pantallaRevisionSolicitud;
     private PantallaConfirmacionSolicitud pantallaConfirmacionSolicitud;
     
-    public Coordinador(){
-        
+    // Subsistemas (Atributos de Interface)
+    private final IAdministrarCliente administrarCliente;
+    private final IAdministrarVehiculo administrarVehiculo;
+
+
+    public Coordinador() {
+        // Se instancian las fachadas
+        this.administrarCliente = new FacadeAdministrarCliente();
+        this.administrarVehiculo = new FacadeAdministrarVehiculo();
+    }
+    
+    /**
+     * Guarda los datos del cliente y los mantiene en memoria para la solicitud.
+     * @param cliente
+     */
+    public void guardarDatosPersonales(ClienteDTO cliente) {
+        this.administrarCliente.guardarDatosPersonales(cliente);
+        System.out.println("Datos de cliente recibidos y enviados al subsistema.");
+    }
+
+    /**
+     * Recupera la lista de vehículos del subsistema Mock.
+     * @return 
+     */
+    public List<VehiculoDTO> obtenerVehiculosDisponibles() {
+        return this.administrarVehiculo.obtenerCatalogoDisponibles();
     }
     
     public void iniciarSistema(){
