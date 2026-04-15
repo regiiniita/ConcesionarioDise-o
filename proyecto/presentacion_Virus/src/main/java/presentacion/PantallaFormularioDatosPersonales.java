@@ -7,10 +7,14 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import dto.ClienteDTO;
 
 public class PantallaFormularioDatosPersonales extends JFrame {
     
     private final Coordinador coordinador;
+    private JTextField txtNombre, txtApellidos, txtEdad, txtCURP, txtRFC, txtTelefono, txtCorreo, txtDomicilio;
+    private JComboBox<String> cbEstadoCivil;
+    private JLabel lblArchivoCurp, lblArchivoRfc, lblArchivoIne;
 
     private static final Color COLOR_FONDO = new Color(239, 242, 247);
     private static final Color COLOR_AZUL = new Color(37, 99, 235);
@@ -22,6 +26,8 @@ public class PantallaFormularioDatosPersonales extends JFrame {
 
     public PantallaFormularioDatosPersonales(Coordinador coordinador) {
         this.coordinador = coordinador;
+        
+        inicializarCampos();
         
         setTitle("Información Personal");
         setSize(1000, 910);
@@ -47,6 +53,17 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         contenedorCentral.add(crearPie());
 
         fondo.add(contenedorCentral);
+    }
+    
+    private void inicializarCampos() {
+        txtNombre = new JTextField();
+        txtApellidos = new JTextField();
+        txtEdad = new JTextField();
+        txtCURP = new JTextField();
+        txtRFC = new JTextField();
+        txtTelefono = new JTextField();
+        txtCorreo = new JTextField();
+        txtDomicilio = new JTextField();
     }
 
     private JPanel crearEncabezado() {
@@ -110,17 +127,17 @@ public class PantallaFormularioDatosPersonales extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        grid.add(crearCampo("Nombre(s) *", "Juan"), gbc);
+        grid.add(crearCampo("Nombre(s) *", txtNombre), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 12, 0);
-        grid.add(crearCampo("Apellidos *", "García Pérez"), gbc);
+        grid.add(crearCampo("Apellidos *", txtApellidos), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 0, 12, 14);
-        grid.add(crearCampo("Edad *", "30"), gbc);
+        grid.add(crearCampo("Edad *", txtEdad), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -130,28 +147,28 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.insets = new Insets(0, 0, 12, 14);
-        grid.add(crearCampo("CURP *", "GAPR900101HDFRNN09"), gbc);
+        grid.add(crearCampo("CURP *", txtCURP), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.insets = new Insets(0, 0, 12, 0);
-        grid.add(crearCampo("RFC *", "GAPR900101XXX"), gbc);
+        grid.add(crearCampo("RFC *", txtRFC), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.insets = new Insets(0, 0, 12, 14);
-        grid.add(crearCampo("Número de Teléfono *", "+52 55 1234 5678"), gbc);
+        grid.add(crearCampo("Número de Teléfono *", txtTelefono), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 3;
         gbc.insets = new Insets(0, 0, 12, 0);
-        grid.add(crearCampo("Correo Electrónico *", "juan.garcia@ejemplo.com"), gbc);
+        grid.add(crearCampo("Correo Electrónico *", txtCorreo), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(0, 0, 0, 0);
-        grid.add(crearCampoDomicilio("Domicilio *", "Calle Principal 123, Colonia Centro, CDMX"), gbc);
+        grid.add(crearCampoDomicilio("Domicilio *", txtDomicilio), gbc);
 
         card.add(grid);
         return card;
@@ -172,12 +189,15 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         JPanel contenedor = new JPanel(new GridLayout(1, 3, 12, 0));
         contenedor.setOpaque(false);
         contenedor.setAlignmentX(Component.LEFT_ALIGNMENT);
-        contenedor.setPreferredSize(new Dimension(654, 95));
-        contenedor.setMaximumSize(new Dimension(654, 95));
 
-        contenedor.add(crearCajaDocumento("Documento CURP *", "PDF, JPG, o PNG"));
-        contenedor.add(crearCajaDocumento("Documento RFC *", "PDF, JPG, o PNG"));
-        contenedor.add(crearCajaDocumento("ID Oficial (INE/Pasaporte) *", "PDF, JPG, o PNG"));
+        // Inicializamos las etiquetas que cambiarán de nombre
+        lblArchivoCurp = new JLabel("PDF, JPG, o PNG");
+        lblArchivoRfc = new JLabel("PDF, JPG, o PNG");
+        lblArchivoIne = new JLabel("PDF, JPG, o PNG");
+
+        contenedor.add(crearCajaDocumento("Documento CURP *", lblArchivoCurp));
+        contenedor.add(crearCajaDocumento("Documento RFC *", lblArchivoRfc));
+        contenedor.add(crearCajaDocumento("ID Oficial (INE/Pasaporte) *", lblArchivoIne));
 
         card.add(contenedor);
         return card;
@@ -219,9 +239,17 @@ public class PantallaFormularioDatosPersonales extends JFrame {
                 new EmptyBorder(8, 16, 8, 16)
         ));
         
-        btnContinuar.addActionListener(new ActionListener(){
+        btnContinuar.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
+                ClienteDTO cliente = new ClienteDTO();
+                cliente.setIdCliente("CL-999");
+                cliente.setNombre(txtNombre.getText() + " " + txtApellidos.getText());
+                cliente.setRfc(txtRFC.getText());
+                cliente.setDireccion(txtDomicilio.getText());
+
+                coordinador.guardarDatosPersonales(cliente);
+
                 setVisible(false);
                 coordinador.mostrarFormularioInformacionFinanciera();
             }
@@ -247,7 +275,7 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         return card;
     }
 
-    private JPanel crearCampo(String labelText, String placeholder) {
+    private JPanel crearCampo(String labelText, JTextField campo) {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -260,7 +288,6 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         label.setForeground(Color.BLACK);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JTextField campo = new JTextField(placeholder);
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         campo.setForeground(COLOR_TEXTO_SECUNDARIO);
         campo.setBackground(COLOR_INPUT);
@@ -281,7 +308,7 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         return panel;
     }
 
-    private JPanel crearCampoDomicilio(String labelText, String placeholder) {
+    private JPanel crearCampoDomicilio(String labelText, JTextField campo) {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -294,7 +321,6 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         label.setForeground(Color.BLACK);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JTextField campo = new JTextField(placeholder);
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         campo.setForeground(COLOR_TEXTO_SECUNDARIO);
         campo.setBackground(COLOR_INPUT);
@@ -350,12 +376,13 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         return panel;
     }
 
-    private JPanel crearCajaDocumento(String titulo, String subtitulo) {
+    private JPanel crearCajaDocumento(String titulo, JLabel lblSubtitulo) {
         JPanel caja = new JPanel();
         caja.setOpaque(false);
         caja.setLayout(new BoxLayout(caja, BoxLayout.Y_AXIS));
         caja.setBorder(BorderFactory.createDashedBorder(new Color(203, 213, 225), 4, 4, 2, true));
         caja.setPreferredSize(new Dimension(210, 95));
+        caja.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Cursor de mano para indicar que es clicable
 
         JLabel icono = new JLabel("⇪");
         icono.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 24));
@@ -367,7 +394,6 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         lblTitulo.setForeground(COLOR_TEXTO);
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblSubtitulo = new JLabel(subtitulo);
         lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblSubtitulo.setForeground(COLOR_TEXTO_SECUNDARIO);
         lblSubtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -379,6 +405,23 @@ public class PantallaFormularioDatosPersonales extends JFrame {
         caja.add(Box.createVerticalStrut(3));
         caja.add(lblSubtitulo);
         caja.add(Box.createVerticalGlue());
+
+        caja.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                JFileChooser buscador = new JFileChooser();
+                buscador.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos de imagen y PDF", "jpg", "png", "pdf"));
+
+                int resultado = buscador.showOpenDialog(PantallaFormularioDatosPersonales.this);
+
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    java.io.File archivoSeleccionado = buscador.getSelectedFile();
+                    lblSubtitulo.setText("✓ " + archivoSeleccionado.getName());
+                    lblSubtitulo.setForeground(new Color(22, 163, 74));
+                    caja.setBorder(BorderFactory.createDashedBorder(new Color(22, 163, 74), 4, 4, 2, true));
+                }
+            }
+        });
 
         return caja;
     }

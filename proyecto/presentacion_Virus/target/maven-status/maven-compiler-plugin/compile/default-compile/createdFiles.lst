@@ -15,4 +15,5 @@ presentacion\PantallaFormularioDatosPersonales.class
 presentacion\PantallaFormularioInformacionFinanciera.class
 presentacion\PantallaConfirmacionSolicitud$1.class
 presentacion\PantallaCatalogoVehiculos$1.class
+presentacion\PantallaFormularioDatosPersonales$3.class
 inicio\InicioAplicacion.class
