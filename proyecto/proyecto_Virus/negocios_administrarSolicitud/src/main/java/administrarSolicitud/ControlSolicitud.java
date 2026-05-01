@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package administrarSolicitud;
 
 import dto.ClienteDTO;
@@ -10,66 +14,64 @@ import java.util.List;
 
 /**
  * Controlador de casos de uso para la gestión de solicitudes.
- * Actúa como intermediario entre el Coordinador de la interfaz gráfica 
- * y la Fachada del subsistema de negocio.
+ * Recibe las peticiones de la Fachada y orquesta la ejecución de la 
+ * lógica de negocio comunicándose directamente con los Objetos de Negocio.
  * @author regina, mariana, ernesto, isaac y luis
  */
 public class ControlSolicitud {
     
-    private IAdministrarSolicitud fachada;
+    private SolicitudBO solicitudBO; 
 
     /**
-     * Constructor por defecto.
-     * Inicializa la conexión con el subsistema de negocio instanciando su Fachada.
+     * Constructor del Controlador.
+     * Inicializa la conexión con la capa de reglas de negocio.
      */
     public ControlSolicitud() {
-        this.fachada = new FachadaAdministrarSolicitud();
+        this.solicitudBO = SolicitudBO.getInstancia(); 
     }
 
     /**
-     * Envía la petición al subsistema de negocio para iniciar una nueva solicitud.
+     * Envía la petición al BO para inicializar una nueva solicitud.
      * @param cliente El cliente que realiza la solicitud.
-     * @return La solicitud inicializada en estado de borrador.
+     * @return La solicitud inicializada devuelta por el BO.
      */
     public SolicitudDTO iniciarNuevaSolicitud(ClienteDTO cliente) {
-        return fachada.iniciarNuevaSolicitud(cliente);
+        return solicitudBO.iniciarNuevaSolicitud(cliente);
     }
 
     /**
-     * Envía los datos financieros capturados al subsistema para su validación lógica.
+     * Envía los datos financieros al BO para aplicar las reglas y validaciones de negocio.
      * @param solicitud La solicitud con los datos financieros precargados.
-     * @return La solicitud si ha superado todas las validaciones de negocio.
-     * @throws IllegalArgumentException Si los datos no cumplen con las reglas del negocio.
+     * @return La solicitud validada devuelta por el BO.
      */
     public SolicitudDTO agregarDatosFinancieros(SolicitudDTO solicitud) {
-        return fachada.agregarDatosFinancieros(solicitud);
+        return solicitudBO.agregarDatosFinancieros(solicitud);
     }
 
     /**
-     * Finaliza el caso de uso de captura, solicitando al negocio que procese 
-     * y persista la solicitud completada.
+     * Solicita al BO que procese y persista la solicitud completada.
      * @param solicitud La solicitud completa.
-     * @return La solicitud confirmada y con estado ENVIADA.
+     * @return La solicitud confirmada y con estado actualizado devuelta por el BO.
      */
     public SolicitudDTO enviar(SolicitudDTO solicitud) {
-        return fachada.confirmarEnvioSolicitud(solicitud);
+        return solicitudBO.confirmarEnvioSolicitud(solicitud);
     }
 
     /**
-     * Solicita al negocio la lista histórica de trámites realizados por un cliente.
+     * Solicita al BO la lista histórica de trámites realizados por un cliente.
      * @param idCliente Identificador único del cliente.
      * @return Lista de solicitudes vinculadas a dicho cliente.
      */
     public List<SolicitudDTO> consultarPorCliente(String idCliente) {
-        return fachada.obtenerSolicitudesPorCliente(idCliente);
+        return solicitudBO.obtenerSolicitudesPorCliente(idCliente);
     }
     
     /**
-     * Envía el vehículo seleccionado al subsistema para su validación lógica.
+     * Envía la solicitud con el vehículo seleccionado al BO para su validación lógica.
      * @param solicitud La solicitud con el vehículo asignado.
-     * @return La solicitud validada.
+     * @return La solicitud validada devuelta por el BO.
      */
     public SolicitudDTO agregarVehiculo(SolicitudDTO solicitud) {
-        return fachada.agregarVehiculo(solicitud);
+        return solicitudBO.agregarVehiculo(solicitud);
     }
 }
