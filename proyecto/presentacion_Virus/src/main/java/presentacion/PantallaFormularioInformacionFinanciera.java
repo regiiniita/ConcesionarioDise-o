@@ -1,6 +1,7 @@
 package presentacion;
 
 import controlador.Coordinador;
+import dto.SolicitudDTO;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -312,8 +313,18 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
 
             guardarDatosEnVariables();
 
-            coordinador.agregarInformacionFinanciera(getTipoEmpleoSeleccionado(), getPuestoActividadPrincipal(), getTipoContratoSeleccionado(), getEmpresaActividadEconomica(), getAntiguedadLaboralSeleccionada() , Double.parseDouble(getIngresoMensualBruto()), Double.parseDouble(getIngresoMensualNeto()), Double.parseDouble(getGastosMensuales()), getRutaComprobanteIngresos(), getRutaComprobanteEmpleo());
-
+            SolicitudDTO solicitudActual = coordinador.obtenerSolicitud();
+            solicitudActual.setTipoEmpleo(getTipoEmpleoSeleccionado());
+            solicitudActual.setPuesto(getPuestoActividadPrincipal());
+            solicitudActual.setTipoContrato(getTipoContratoSeleccionado());
+            solicitudActual.setNombreEmpresa(getEmpresaActividadEconomica());
+            solicitudActual.setAntiguedadLaboral(getAntiguedadLaboralSeleccionada());
+            solicitudActual.setIngresoMensualBruto(Double.parseDouble(getIngresoMensualBruto()));
+            solicitudActual.setIngresoMensualNeto(Double.parseDouble(getIngresoMensualNeto()));
+            solicitudActual.setGastosMensuales(Double.parseDouble(getGastosMensuales()));
+            solicitudActual.setRutaComprobanteIngresos(getRutaComprobanteIngresos());
+            solicitudActual.setRutaComprobanteEmpleo(getRutaComprobanteEmpleo());
+            coordinador.agregarInformacionFinanciera(solicitudActual);
             setVisible(false);
             coordinador.mostrarCatalagoVehoculos();
         });

@@ -1,11 +1,11 @@
 package controlador;
 
+import administrarCliente.ControlCliente;
 import administrarCliente.FacadeAdministrarCliente;
-import administrarCliente.IAdministrarCliente;
+import administrarSolicitud.ControlSolicitud;
 import administrarSolicitud.FachadaAdministrarSolicitud;
-import administrarSolicitud.IAdministrarSolicitud;
+import administrarVehiculo.ControlVehiculo;
 import administrarVehiculo.FacadeAdministrarVehiculo;
-import administrarVehiculo.IAdministrarVehiculo;
 import dto.ClienteDTO;
 import dto.SolicitudDTO;
 import dto.VehiculoDTO;
@@ -14,7 +14,6 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 import presentacion.*;
 
 public class Coordinador {
@@ -26,9 +25,9 @@ public class Coordinador {
     private PantallaConfirmacionSolicitud pantallaConfirmacionSolicitud;
     
     // Subsistemas (Atributos de Interface)
-    private final IAdministrarCliente administrarCliente;
-    private final IAdministrarVehiculo administrarVehiculo;
-    private final IAdministrarSolicitud administrarSolicitud;
+    private final ControlCliente controlCliente;
+    private final ControlVehiculo controlVehiculo;
+    private final ControlSolicitud controlSolicitud;
     
     private SolicitudDTO solicitud;
     private List<SolicitudDTO> solicitudes;
@@ -38,9 +37,9 @@ public class Coordinador {
 
     public Coordinador() {
         // Se instancian las fachadas
-        this.administrarCliente = new FacadeAdministrarCliente();
-        this.administrarVehiculo = new FacadeAdministrarVehiculo();
-        this.administrarSolicitud = new FachadaAdministrarSolicitud();
+        this.controlCliente = new ControlCliente();
+        this.controlVehiculo = new ControlVehiculo();
+        this.controlSolicitud = new ControlSolicitud();
     }
     
     /**
@@ -101,14 +100,13 @@ public class Coordinador {
     }
     
     public SolicitudDTO asignarClienteASolicitud(ClienteDTO cliente){
-        this.solicitud = administrarSolicitud.iniciarNuevaSolicitud(cliente);
-        return solicitud;
+        this.solicitud = controlSolicitud.iniciarNuevaSolicitud(cliente);
+        return this.solicitud;
     }
     
-    public SolicitudDTO agregarInformacionFinanciera(String tipoEmpleo, String puesto, String tipoContrato, String nombreEmpresa, String antiguedadLaboral, Double ingresoMensualBruto, Double ingresoMensualNeto, Double gastosMensuales, String rutaComprobanteIngresos, String rutaComprobanteEmpleo){
-        this.solicitud = this.administrarSolicitud.agregarDatosFinancieros(solicitud, tipoEmpleo, puesto, tipoContrato, nombreEmpresa, antiguedadLaboral, ingresoMensualBruto, ingresoMensualNeto, gastosMensuales, rutaComprobanteIngresos, rutaComprobanteEmpleo);
-        
-        return solicitud;
+    public SolicitudDTO agregarInformacionFinanciera(SolicitudDTO solicitudConDatos){
+        this.solicitud = this.controlSolicitud.agregarDatosFinancieros(solicitudConDatos);
+        return this.solicitud;
     }
     
     public void asignarVehiculoSeleccionado(VehiculoDTO vehiculo){
@@ -125,9 +123,7 @@ public class Coordinador {
     }
     
     public List<SolicitudDTO> obtenerSolicitudes(){
-        if(solicitudes == null) solicitudes = new ArrayList<>();
-        
-        return solicitudes;
+        return controlSolicitud.consultarPorCliente(this.cliente.getCurp());
     }
     
     private String generarIdSolicitud(){
