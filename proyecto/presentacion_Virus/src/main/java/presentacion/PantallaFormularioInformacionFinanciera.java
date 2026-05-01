@@ -258,13 +258,13 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
 
         contenedor.add(crearCajaDocumentoSubida(
                 "Comprobante de Ingresos *",
-                "Recibos de nómina, estados de cuenta o facturas",
+                "Solo archivos PDF",
                 true
         ));
 
         contenedor.add(crearCajaDocumentoSubida(
                 "Comprobante de Empleo *",
-                "Carta laboral o registro de negocio",
+                "Solo archivos PDF",
                 false
         ));
 
@@ -427,18 +427,21 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
         lblArchivo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         btnSeleccionar.addActionListener((ActionEvent e) -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setDialogTitle("Seleccionar archivo");
-            chooser.setAcceptAllFileFilterUsed(true);
-            chooser.addChoosableFileFilter(new FileNameExtensionFilter(
-                    "Documentos e imágenes", "pdf", "jpg", "jpeg", "png"
-            ));
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Seleccionar documento PDF");
 
-            int resultado = chooser.showOpenDialog(this);
+        chooser.setAcceptAllFileFilterUsed(false);
 
-            if (resultado == JFileChooser.APPROVE_OPTION) {
-                File archivo = chooser.getSelectedFile();
+        FileNameExtensionFilter filtroPdf = new FileNameExtensionFilter("Documentos PDF (*.pdf)", "pdf");
+        chooser.setFileFilter(filtroPdf);
 
+        int resultado = chooser.showOpenDialog(this);
+
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            File archivo = chooser.getSelectedFile();
+
+            // Validación de seguridad adicional
+            if (archivo.getName().toLowerCase().endsWith(".pdf")) {
                 if (esIngresos) {
                     rutaComprobanteIngresos = archivo.getAbsolutePath();
                     lblArchivoIngresos.setText(archivo.getName());
@@ -446,8 +449,11 @@ public class PantallaFormularioInformacionFinanciera extends JFrame {
                     rutaComprobanteEmpleo = archivo.getAbsolutePath();
                     lblArchivoEmpleo.setText(archivo.getName());
                 }
+            } else {
+                JOptionPane.showMessageDialog(this, "Solo se permiten archivos en formato PDF.", "Error de formato", JOptionPane.ERROR_MESSAGE);
             }
-        });
+        }
+    });
 
         if (esIngresos) {
             lblArchivoIngresos = lblArchivo;

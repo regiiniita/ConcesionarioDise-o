@@ -418,14 +418,24 @@ public class PantallaFormularioDatosPersonales extends JFrame {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 JFileChooser buscador = new JFileChooser();
-                buscador.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(
-                        "Archivos de imagen y PDF", "jpg", "jpeg", "png", "pdf"
-                ));
+
+                javax.swing.filechooser.FileNameExtensionFilter filtroPdf = 
+                    new javax.swing.filechooser.FileNameExtensionFilter("Documentos PDF (*.pdf)", "pdf");
+
+                buscador.setFileFilter(filtroPdf);
+
+                buscador.setAcceptAllFileFilterUsed(false);
 
                 int resultado = buscador.showOpenDialog(PantallaFormularioDatosPersonales.this);
 
                 if (resultado == JFileChooser.APPROVE_OPTION) {
                     java.io.File archivoSeleccionado = buscador.getSelectedFile();
+
+                    if (!archivoSeleccionado.getName().toLowerCase().endsWith(".pdf")) {
+                        JOptionPane.showMessageDialog(null, "Por favor, seleccione un archivo con extensión .pdf");
+                        return;
+                    }
+
                     lblSubtitulo.setText("✓ " + archivoSeleccionado.getName());
                     lblSubtitulo.setForeground(new Color(22, 163, 74));
                     caja.setBorder(BorderFactory.createDashedBorder(new Color(22, 163, 74), 4, 4, 2, true));
