@@ -6,21 +6,18 @@ package administrarSolicitud;
 
 import dto.ClienteDTO;
 import dto.SolicitudDTO;
+import dto.VehiculoDTO;
 import java.util.List;
 
-
 /**
- * Interfaz que define el contrato del subsistema para la administración de solicitudes.
- * Expone las operaciones principales que las capas superiores 
- * pueden invocar para gestionar el ciclo de vida de una solicitud de crédito o financiamiento.
+ * Interfaz que define las operaciones de negocio para la gestión de solicitudes.
  * @author regina, mariana, ernesto, isaac y luis
  */
-public interface IAdministrarSolicitud {
+public interface ISolicitudBO {
     
     SolicitudDTO iniciarNuevaSolicitud(ClienteDTO cliente);
-    SolicitudDTO agregarDatosFinancieros(SolicitudDTO solicitud);
+    SolicitudDTO agregarDatosFinancieros(SolicitudDTO solicitudConDatos); 
     SolicitudDTO confirmarEnvioSolicitud(SolicitudDTO solicitud);
     List<SolicitudDTO> obtenerSolicitudesPorCliente(String idCliente);
     SolicitudDTO agregarVehiculo(SolicitudDTO solicitud);
-    
 }

@@ -53,11 +53,27 @@ public class SolicitudDTO {
         this.fechaCreacion = fechaCreacion;
     }
 
+    public SolicitudDTO(LocalDateTime fechaEnvio, EstadoSolicitudDTO estado, VehiculoDTO vehiculo, ClienteDTO cliente, String tipoEmpleo, String puesto, String tipoContrato, String nombreEmpresa, String antiguedadLaboral, Double ingresoMensualBruto, Double ingresoMensualNeto, Double gastosMensuales, String rutaComprobanteIngresos, String rutaComprobanteEmpleo, Double enganche, LocalDateTime fechaCreacion) {
+        this.fechaEnvio = fechaEnvio;
+        this.estado = estado;
+        this.vehiculo = vehiculo;
+        this.cliente = cliente;
+        this.tipoEmpleo = tipoEmpleo;
+        this.puesto = puesto;
+        this.tipoContrato = tipoContrato;
+        this.nombreEmpresa = nombreEmpresa;
+        this.antiguedadLaboral = antiguedadLaboral;
+        this.ingresoMensualBruto = ingresoMensualBruto;
+        this.ingresoMensualNeto = ingresoMensualNeto;
+        this.gastosMensuales = gastosMensuales;
+        this.rutaComprobanteIngresos = rutaComprobanteIngresos;
+        this.rutaComprobanteEmpleo = rutaComprobanteEmpleo;
+        this.enganche = enganche;
+        this.fechaCreacion = fechaCreacion;
+    }
+
     
-
-
     
-
     public String getId() {
         return id;
     }
