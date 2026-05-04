@@ -4,10 +4,16 @@
  */
 package administrarCliente;
 
+import dto.ClienteDTO;
+
 /**
  *
  * @author regina, mariana, ernesto, isaac y luis
  */
 public interface IClienteBO {
+    
+    ClienteDTO guardarDatosPersonales(ClienteDTO cliente);
+    
+    ClienteDTO consultarCliente(String id);
     
 }

@@ -12,9 +12,12 @@ package dto;
 public class ClienteDTO {
     
     private String idCliente;
-    private String nombre;
+    private String pNombre;
+    private String sNombre;
+    private String apellidoP;
+    private String apellidoM;
     private String rfc;
-    private String direccion;
+    private DireccionDTO direccion;
     private String curp;
     private String estadoCivil;
     private String telefono;
@@ -26,9 +29,12 @@ public class ClienteDTO {
     public ClienteDTO() {
     }
 
-    public ClienteDTO(String idCliente, String nombre, String rfc, String direccion, String curp, String estadoCivil, String telefono, String correo, String rutaCurp, String rutaRfc, String rutaIdentificacion) {
+    public ClienteDTO(String idCliente, String pNombre, String sNombre, String apellidoP, String apellidoM, String rfc, DireccionDTO direccion, String curp, String estadoCivil, String telefono, String correo, String rutaCurp, String rutaRfc, String rutaIdentificacion) {
         this.idCliente = idCliente;
-        this.nombre = nombre;
+        this.pNombre = pNombre;
+        this.sNombre = sNombre;
+        this.apellidoP = apellidoP;
+        this.apellidoM = apellidoM;
         this.rfc = rfc;
         this.direccion = direccion;
         this.curp = curp;
@@ -39,7 +45,22 @@ public class ClienteDTO {
         this.rutaRfc = rutaRfc;
         this.rutaIdentificacion = rutaIdentificacion;
     }
-    
+
+    public ClienteDTO(String pNombre, String sNombre, String apellidoP, String apellidoM, String rfc, DireccionDTO direccion, String curp, String estadoCivil, String telefono, String correo, String rutaCurp, String rutaRfc, String rutaIdentificacion) {
+        this.pNombre = pNombre;
+        this.sNombre = sNombre;
+        this.apellidoP = apellidoP;
+        this.apellidoM = apellidoM;
+        this.rfc = rfc;
+        this.direccion = direccion;
+        this.curp = curp;
+        this.estadoCivil = estadoCivil;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.rutaCurp = rutaCurp;
+        this.rutaRfc = rutaRfc;
+        this.rutaIdentificacion = rutaIdentificacion;
+    }
 
     public String getIdCliente() {
         return idCliente;
@@ -49,14 +70,39 @@ public class ClienteDTO {
         this.idCliente = idCliente;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getpNombre() {
+        return pNombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setpNombre(String pNombre) {
+        this.pNombre = pNombre;
     }
 
+    public String getsNombre() {
+        return sNombre;
+    }
+
+    public void setsNombre(String sNombre) {
+        this.sNombre = sNombre;
+    }
+
+    public String getApellidoP() {
+        return apellidoP;
+    }
+
+    public void setApellidoP(String apellidoP) {
+        this.apellidoP = apellidoP;
+    }
+
+    public String getApellidoM() {
+        return apellidoM;
+    }
+
+    public void setApellidoM(String apellidoM) {
+        this.apellidoM = apellidoM;
+    }
+
+    
     public String getRfc() {
         return rfc;
     }
@@ -65,11 +111,11 @@ public class ClienteDTO {
         this.rfc = rfc;
     }
 
-    public String getDireccion() {
+    public DireccionDTO getDireccion() {
         return direccion;
     }
 
-    public void setDireccion(String direccion) {
+    public void setDireccion(DireccionDTO direccion) {
         this.direccion = direccion;
     }
 

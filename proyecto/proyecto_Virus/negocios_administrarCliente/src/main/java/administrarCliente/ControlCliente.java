@@ -30,7 +30,7 @@ class ControlCliente {
      * @param cliente DTO con la información a guardar.
      */
     protected ClienteDTO guardarDatosPersonales(ClienteDTO cliente) {
-            System.out.println("Guardando datos de: " + cliente.getNombre());
+            System.out.println("Guardando datos de: " + cliente.getpNombre()+"  " + cliente.getsNombre()+ "  " + cliente.getApellidoP()+ "  " + cliente.getApellidoM());
             return this.cliente = cliente;
         
     }
